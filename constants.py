@@ -3,6 +3,7 @@ import os
 if 'BASE_DIR' not in os.environ:
   BASE_DIR = os.path.join('/phys', 'groups', 'tev', 'scratch3', 'users', 'epeml', 'cnn_colorflow') # tev machine base dir
   os.environ['BASE_DIR'] = BASE_DIR
+BASE_DIR = os.environ['BASE_DIR']
 if not os.path.exists(BASE_DIR):
   print('[constants] Error: BASE_DIR ({}) does not exist! Please modify your environment to specify BASE_DIR.'.format(BASE_DIR))
   exit()
