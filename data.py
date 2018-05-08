@@ -104,8 +104,6 @@ def get_train_test(n=-1, delta_R_min=float("-inf"), delta_R_max=float("inf"),  w
   sig_y = np.ones(sig_pixels.shape[0])
   X = np.concatenate((bg_pixels, sig_pixels), axis=0)
   y = np.concatenate((bg_y, sig_y), axis=0)
-  # Zero pad to 32x32
-  X = np.lib.pad(X, ((0, 0), (0, 0), (0, 7), (0, 7)), 'constant', constant_values=0)
   return train_test_split(X, y, weights, train_size=train_size)
 
 def main():

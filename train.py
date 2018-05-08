@@ -40,7 +40,7 @@ def train_model(X_train, X_test, y_train, y_test, weights_train, model_dir, drop
 
   model = Sequential()
 
-  model.add(Conv2D(conv_width, (11, 11), input_shape=(1, 32, 32), padding='same'))
+  model.add(Conv2D(conv_width, (11, 11), input_shape=(1, 25, 25), padding='same'))
   model.add(Activation('relu'))
   model.add(MaxPooling2D((2, 2)))
 
