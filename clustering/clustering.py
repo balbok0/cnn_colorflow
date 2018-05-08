@@ -1,7 +1,9 @@
 import numpy as np
 
-algorithm = 2 # 0 for k-mean, 1 for fuzzy k-means (doesnt exist in scikit), 
+algorithm = 0 # 0 for k-mean, 1 for fuzzy k-means (doesnt exist in scikit), 
               # 2 for Hierarchical clustering, 3 for Gaussian mixtures (too long time to run)
+
+seperated = 1
 nClusters = 20
 
 
@@ -38,9 +40,15 @@ print np.sum(cluster.labels_ == y)/float(y.shape[0])
 
 '''
 if algorithm == 0:
-    cluster = KMeans(n_clusters=nClusters).fit(X)
     title = 'KMeans'
-    prediction = cluster.labels_
+    if seperated != 1:
+        cluster = KMeans(n_clusters=nClusters).fit(X)
+        prediction = cluster.labels_
+    else:
+        title = title + '_Seperated'
+        cluster_o = KMeans(n_clusters=nClusters/2).fit(bg)
+        cluster_s = KMeans(n_clusters=nClusters/2).fit(sig)
+        prediction = np.concatenate((cluster_o.labels_, cluster_s.labels_ + 10))
 elif algorithm == 2:
     cluster = FeatureAgglomeration(n_clusters=nClusters).fit(X)
     title = 'HierarchicalClustering'
@@ -53,6 +61,15 @@ elif algorithm == 3:
 print 'Generating plots...'
 from matplotlib import pyplot as plt
 
+def jetImage(arr, titl, path):
+    plt.clf()
+    plt.imshow(np.log(arr).reshape(25, 25), interpolation="none", cmap='GnBu')
+    plt.xlabel('Proportional to Translated Pseudorapidity', fontsize=7)
+    plt.ylabel('Proportional to Translated Azimuthal Angle', fontsize=7)
+    plt.title(titl, fontsize=14)
+    plt.colorbar()
+    plt.savefig(path)
+
 for i in range(0, nClusters):
     mask = (prediction == i)
     xSample = X[mask]
@@ -60,12 +77,16 @@ for i in range(0, nClusters):
     sigCount = np.sum(y[mask])
     bgCount = np.sum(1 - y[mask])
 
-    plt.clf()
-    plt.imshow(np.sum(xSample, axis=0).reshape(25, 25), interpolation="none", cmap='GnBu')
-    plt.xlabel('Proportional to Translated Pseudorapidity', fontsize=7)
-    plt.ylabel('Proportional to Translated Azimuthal Angle', fontsize=7)
-    plt.title('Cluster ' + str(i) + ', #oct=' + str(bgCount) + ', #sing=' + str(sigCount), fontsize=14)
-    plt.colorbar()
-    plt.savefig(title + '/cluster_' + str(i) + '.png')
+    jetImage(np.sum(xSample, axis=0), 
+            'Cluster ' + str(i) + ', #oct=' + str(bgCount) + ', #sing=' + str(sigCount), 
+            title + '/cluster_' + str(i) + '/average.png')
+
+    # representative sample
+    for j in range(0, 3):
+        jetImage(xSample[j], 
+            'Cluster ' + str(i) + ', pic ' + str(j), 
+            title + '/cluster_' + str(i) + '/' + str(j) + '.png')
+
+np.save('clusters.npy', prediction)
 
 print 'Done'
