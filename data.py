@@ -25,19 +25,13 @@ def get_pixels_metadata(octet=False, n=-1, delta_R_min=float('-inf'), delta_R_ma
   The metadata is a (n, 4) pandas array.
   """
   if octet:
-    textfile = constants.OCTET_TEXT
-    npyfile = constants.OCTET_NPY
     print("[data] Getting octet pixel data ...")
   else:
-    textfile = constants.SINGLET_TEXT
-    npyfile = constants.SINGLET_NPY
     print("[data] Getting singlet pixel data ...")
+  npyfile = constants.DATA_NPY
   # Get the appropriate numpy array, either from a saved .npy file or
   # from the original .txt file.
-  if recalculate or not os.path.exists(npyfile):
-    if not os.path.exists(npyfile):
-      print("[data] {} not found, attempting to recreate from {} (this may take several minutes) ...".format(npyfile, textfile))
-    data = np.loadtxt(textfile, usecols=[0, 1, 6, 634] + list(range(9, 634)))
+  if recalculate:
     # Remove any row with a nan value.
     if (np.isnan(data).any()):
       print("[data] Warning: non-numeric values encountered, removing affected samples.")
@@ -47,10 +41,26 @@ def get_pixels_metadata(octet=False, n=-1, delta_R_min=float('-inf'), delta_R_ma
   else:
     print("[data] Loading from {} ...".format(npyfile))
     data = np.load(npyfile)
+
+  mask = (data['signal'] > 0)
+  size = mask.shape[0]
+
+  metadata = np.zeros((size, 4))
+  metadata[:, 0] = data['pull1']
+  metadata[:, 1] = data['pull2']
+  metadata[:, 2] = data['jet_mass']
+  metadata[:, 3] = data['jet_delta_R']
+
+  pixels = data['image']
+  if octet:
+    mask = ~mask
+  pixels = pixels[mask]
+  metadata = metadata[mask]
   if n != -1:
-    data = data[:n]
-  metadata = data[:, :4]
-  pixels = data[:, 4:]
+    frac = float(np.sum(mask)) / float(size)
+    pixels = pixels[:int(n*frac)]
+    metadata = metadata[:int(n*frac)]
+
   metadata = pd.DataFrame(metadata, columns=['pull_1', 'pull_2', 'mass', 'delta_R'])
   # Restrict delta R
   pixels = pixels[np.where((metadata['delta_R'] <= delta_R_max) & (metadata['delta_R'] >= delta_R_min))]

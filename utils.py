@@ -6,6 +6,9 @@ import numpy as np
 from keras.models import load_model
 
 import constants
+if constants.THEANO:
+  from keras import backend as K
+  K.set_image_dim_ordering('th')
 
 def make_run_dir():
   timestamp = '{:%Y%m%d%H%M%S}'.format(datetime.datetime.now())

@@ -11,6 +11,7 @@ def plot_roc(title, fname, X_test, y_test, model, show=False):
   y_score = model.predict(X_test, verbose=2)
   fpr, tpr, _ = roc_curve(y_test, y_score)
   AUC = auc(fpr, tpr)
+  plt.clf()
   plt.plot(fpr, tpr, lw=2, drawstyle='steps-post', color='blue')
   plt.plot([0,1], [0,1], 'r--')
   plt.text(0.6, 0.2, "AUC = {:.3}".format(AUC), fontsize=17, weight=550)
@@ -27,6 +28,7 @@ def plot_sic(title, fname, X_test, y_test, model, show=False):
   y_score = model.predict(X_test, verbose=2)
   fpr, tpr, _ = roc_curve(y_test, y_score)
   sic = tpr / np.sqrt(fpr)
+  plt.clf()
   plt.plot(tpr, sic, lw=2, drawstyle='steps-post', color='red')
   plt.xlabel('true positive rate', fontsize=15)
   plt.ylabel('tpr/sqrt(fpr)', fontsize=15)
@@ -51,7 +53,7 @@ def main():
   model, X_test, y_test = utils.get_model_test(args.run_dir)
   plot_roc('ROC curve', os.path.join(args.run_dir, 'roc_plot.png'), X_test, y_test, model, show=True)
   plot_sic('SIC', os.path.join(args.run_dir, 'sic_plot.png'), X_test, y_test, model, show=True)
-  print('At TPR ~ 0.5, FPR = {}'.format(fixed_efficiency(X_test, y_test, model))
+  print('At TPR ~ 0.5, FPR = {}'.format(fixed_efficiency(X_test, y_test, model)))
 
 if __name__ == '__main__':
   main()
