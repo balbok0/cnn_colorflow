@@ -9,7 +9,7 @@ import utils
 
 def plot_clusters(run_dir, X, y, n_clusters, separate_octet_singlet):
   if separate_octet_singlet:
-    title = 'kmeans_separated)'
+    title = 'kmeans_separated'
     mask = (y == 1)
     X_singlet = X[mask]
     X_octet = X[np.logical_not(mask)]
