@@ -84,7 +84,6 @@ def main():
   if not args.run_dir:
     args.run_dir = utils.make_run_dir()
     print('[heatmaps] New run directory created at {}'.format(args.run_dir))
-  X, _, y, _, _, _ = data.get_train_test()
   plot_heatmaps(args.run_dir, args.cluster_dir, args.n_clusters)
 
 if __name__ == '__main__':
