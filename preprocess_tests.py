@@ -25,6 +25,12 @@ def safer(arr):
     arr[np.abs(arr)<eps]=eps
     return arr
 
+def cap(arr):
+    top = 10
+    arr[arr>top]=top
+    arr[arr<-top]=-top
+    return arr
+
 def safelog(arr):
     arr[arr==0]=1e-10
     arr = cap(arr)
@@ -38,14 +44,22 @@ def safenorm(arr):
     arr[arr>top]=top
     return arr
 
-def cap(arr):
-    top = 10
+def safedev(arr):
+    eps = 1
+    top = 100
+    arr[arr<eps]=eps
     arr[arr>top]=top
-    arr[arr<-top]=-top
+    return arr
+
+def safeminmax(arr):
+    eps = 1e-1
+    top = 1000
+    arr[arr<eps]=eps
+    arr[arr>top]=top
     return arr
 
 def minMax(arr):
-    return (arr - np.min(arr, axis=0)) / ((np.max(arr, axis=0) - np.min(arr, axis=0))/2) - 1
+    return (arr - np.min(arr, axis=0)) / safeminmax(((np.max(arr, axis=0) - np.min(arr, axis=0))/2)) - 1
 
 def preprocess_tests(preprocess_tests_dir = '../preprocess_tests'):
     constants.DATA_NPY = constants.ROTATED_NPY
@@ -72,10 +86,10 @@ def preprocess_tests(preprocess_tests_dir = '../preprocess_tests'):
     X_train_norm2 =  X_train/safenorm(LA.norm(X_train, 2, axis=0))
     X_test_norm2 = X_test/safenorm(LA.norm(X_test, 2, axis=0))
 
-    X_train_log_std = X_train_log/np.std(X_train_log, axis = 0) - np.mean(X_train_log, axis = 0)
-    X_test_log_std = X_test_log/np.std(X_test_log, axis = 0) - np.mean(X_test_log, axis = 0)
-    X_train_std =  X_train/np.std(X_train, axis = 0) - np.mean(X_train, axis = 0)
-    X_test_std = X_test/np.std(X_test, axis = 0) - np.mean(X_test, axis = 0)
+    X_train_log_std = X_train_log/safedev(np.std(X_train_log, axis = 0)) - np.mean(X_train_log, axis = 0)
+    X_test_log_std = X_test_log/safedev(np.std(X_test_log, axis = 0)) - np.mean(X_test_log, axis = 0)
+    X_train_std =  X_train/safedev(np.std(X_train, axis = 0)) - np.mean(X_train, axis = 0)
+    X_test_std = X_test/safedev(np.std(X_test, axis = 0)) - np.mean(X_test, axis = 0)
 
     X_train_log_mm = X_train_log/minMax(X_train_log)
     X_test_log_mm = X_test_log/minMax(X_test_log)
