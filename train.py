@@ -6,6 +6,20 @@ import constants
 import data
 import utils
 
+def train_model_save(X_train, X_test, y_train, y_test, weights_train, model_dir, file_name, dropout=0.5, dense_width=125, conv_width=16, batch_size=1024, epochs=200, recalc=False):
+  from keras import backend as K
+  K.set_image_dim_ordering('th')
+  from keras.models import load_model
+
+  modelFileName = model_dir + '/' + file_name
+  if os.path.isfile(modelFileName) and not recalc:
+      model = load_model(modelFileName)
+  else:
+      model = train_model(X_train, X_test, y_train, y_test, weights_train, model_dir, dropout, dense_width, conv_width, batch_size, epochs)
+      model.save(modelFileName)
+
+  return model
+
 def train_model(X_train, X_test, y_train, y_test, weights_train, model_dir, dropout=0.5, dense_width=125, conv_width=16, batch_size=1024, epochs=200):
   """ Return the model trained on the given data with the given weights.
   Return:
