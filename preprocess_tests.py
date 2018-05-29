@@ -2,6 +2,7 @@ import os
 from keras.models import load_model
 import numpy as np
 from numpy import linalg as LA
+from matplotlib import pyplot as plt
 
 import train
 import data
@@ -11,7 +12,17 @@ if constants.THEANO:
     from keras import backend as K
     K.set_image_dim_ordering('th')
 
+def printAverageImage(dat, file):
+    plt.clf()
+    plt.imshow(np.sum(dat, axis=0).reshape(25, 25), interpolation="none", cmap='GnBu')
+    plt.xlabel('Proportional to Translated Pseudorapidity', fontsize=7)
+    plt.ylabel('Proportional to Translated Azimuthal Angle', fontsize=7)
+    plt.title('Average Image', fontsize=19)
+    plt.colorbar()
+    plt.savefig(file)
+
 def printdata(name, X_train, X_test, y_train, y_test, weights, direc, recalc=False):
+    printAverageImage(X_train, direc + 'image_' + name + '.png')
     fname = direc + '/results_' + name + '.txt'
     if os.path.isfile(fname) and not recalc:
         return
@@ -45,18 +56,10 @@ def safenorm(arr):
     return arr
 
 def safedev(arr):
-    eps = 1
-    top = 100
-    arr[arr<eps]=eps
-    arr[arr>top]=top
-    return arr
+    return safenorm(arr)
 
 def safeminmax(arr):
-    eps = 1e-1
-    top = 1000
-    arr[arr<eps]=eps
-    arr[arr>top]=top
-    return arr
+    return safenorm(arr)
 
 def minMax(arr):
     return (arr - np.min(arr, axis=0)) / safeminmax(((np.max(arr, axis=0) - np.min(arr, axis=0))/2)) - 1
