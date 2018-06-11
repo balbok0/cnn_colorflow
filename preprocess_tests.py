@@ -13,7 +13,7 @@ if constants.THEANO:
 
 def printAverageImage(dat, file, name):
     plt.clf()
-    plt.imshow((np.sum(dat, axis=0).reshape(25, 25))/dat.shape[0], interpolation="none", cmap='GnBu')
+    plt.imshow((np.sum(dat, axis=0).reshape(dat.shape[2], dat.shape[3]))/dat.shape[0], interpolation="none", cmap='GnBu')
     plt.xlabel('Proportional to Translated Pseudorapidity', fontsize=7)
     plt.ylabel('Proportional to Translated Azimuthal Angle', fontsize=7)
     plt.title('Average Image ' + name, fontsize=19)
@@ -31,9 +31,10 @@ def printdata(name, X_train, X_test, y_train, y_test, weights, direc, recalc=Fal
     f.close() #save out results
 
 def shape(arr):
-    return arr.reshape(arr.shape[0], 625)
+    return arr.reshape(arr.shape[0], arr.shape[1] * arr.shape[2] * arr.shape[3])
 def deshape(arr):
-    return arr.reshape(1, 25, 25)
+    deshape_dim = int(arr.shape[0]**0.5)
+    return arr.reshape(1, deshape_dim, deshape_dim)
 
 def minMax(arr):
     shape(arr)
@@ -71,6 +72,11 @@ def safeMean(arr):
     size = arr.shape[0]
     arr = np.sum(arr, axis = 0)/size
     return deshape(arr)
+
+def logAnd1Norm(train, test):
+    train = safeLog(train)
+    test = safeLog(test)
+    return train/safeNorm(train, 1), test/safeNorm(train, 1)
 
 def preprocess_tests(preprocess_tests_dir = '../preprocess_tests'):
     constants.DATA_NPY = constants.ROTATED_NPY
@@ -118,7 +124,7 @@ def preprocess_tests(preprocess_tests_dir = '../preprocess_tests'):
 
 def main():
     import argparse
-    parser = argparse.ArgumentParser(description='Generate a learning curve.')
+    parser = argparse.ArgumentParser(description='Run comprehensive preproessing tests.')
     parser.add_argument('--save', default='../preprocess_tests', help='The directory in which models and the curve will be saved.')
     args = parser.parse_args()
     

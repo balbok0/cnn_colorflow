@@ -13,6 +13,7 @@ RUN_DIR = os.path.join(BASE_DIR, 'runs')
 DATA_DIR = os.path.join(BASE_DIR, 'samples')
 ROTATED_NPY = os.path.join(DATA_DIR, 'rotated.npy')
 NROTATED_NPY = os.path.join(DATA_DIR, 'not_rotated.npy')
+SIZE50_NPY = os.path.join(DATA_DIR, 'size50.npy')
 DATA_NPY = NROTATED_NPY #change to select default data
 WEIGHTS_DIR = 'weights'
 TEST_DIR = 'test_samples'
