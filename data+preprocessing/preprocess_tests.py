@@ -2,6 +2,9 @@ import os
 from keras.models import load_model
 import numpy as np
 from matplotlib import pyplot as plt
+import sys
+
+sys.path.append("../utilities")
 
 import train
 import data

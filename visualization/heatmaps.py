@@ -3,6 +3,9 @@ import os
 import numpy as np
 from matplotlib import pyplot as plt
 from math import log
+import sys
+
+sys.path.append("../utilities")
 
 import constants
 import utils

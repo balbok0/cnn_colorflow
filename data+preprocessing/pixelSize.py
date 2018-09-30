@@ -1,6 +1,9 @@
 import os
 from keras.models import load_model
 import numpy as np
+import sys
+
+sys.path.append("../utilities")
 
 import data
 import constants
@@ -15,12 +18,16 @@ def pixelSize_tests(pixelSize_tests_dir = '../pixelSize_tests'):
     X_train_50, X_test_50, y_train_50, y_test_50, weights_train_50, _ = data.get_train_test()
     constants.DATA_NPY = constants.NROTATED_NPY
     X_train_25, X_test_25, y_train_25, y_test_25, weights_train_25, _ = data.get_train_test()
+    constants.DATA_NPY = constants.SIZE100_NPY
+    X_train_100, X_test_100, y_train_100, y_test_100, weights_train_100, _ = data.get_train_test()
 
     #preprocess
+    X_train_100, X_test_100 = preprocess_tests.logAnd1Norm(X_train_100, X_test_100)
     X_train_50, X_test_50 = preprocess_tests.logAnd1Norm(X_train_50, X_test_50)
     X_train_25, X_test_25 = preprocess_tests.logAnd1Norm(X_train_25, X_test_25)
 
     #calculate results
+    preprocess_tests.printdata('size100', X_train_100, X_test_100, y_train_100, y_test_100, weights_train_100, pixelSize_tests_dir)
     preprocess_tests.printdata('size50', X_train_50, X_test_50, y_train_50, y_test_50, weights_train_50, pixelSize_tests_dir)
     preprocess_tests.printdata('size25', X_train_25, X_test_25, y_train_25, y_test_25, weights_train_25, pixelSize_tests_dir)
 

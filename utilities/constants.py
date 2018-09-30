@@ -1,6 +1,6 @@
 import os
 
-BASE_DIR = '../base_dir' #define your own base dir, use None for actual base dir
+BASE_DIR = '../../base_dir' #define your own base dir, use None for actual base dir
 if BASE_DIR == None:
   if 'BASE_DIR' not in os.environ:
     BASE_DIR = os.path.join('/phys', 'groups', 'tev', 'scratch3', 'users', 'epeml', 'cnn_colorflow') # tev machine base dir
@@ -14,6 +14,7 @@ DATA_DIR = os.path.join(BASE_DIR, 'samples')
 ROTATED_NPY = os.path.join(DATA_DIR, 'rotated.npy')
 NROTATED_NPY = os.path.join(DATA_DIR, 'not_rotated.npy')
 SIZE50_NPY = os.path.join(DATA_DIR, 'size50.npy')
+SIZE100_NPY = os.path.join(DATA_DIR, 'size100.npy')
 DATA_NPY = NROTATED_NPY #change to select default data
 WEIGHTS_DIR = 'weights'
 TEST_DIR = 'test_samples'
