@@ -1,5 +1,6 @@
 import os
-import numpy as np
+import numpy as np 
+import h5py
 import pandas as pd
 from sklearn.model_selection import train_test_split
 
@@ -28,7 +29,7 @@ def get_pixels_metadata(octet=False, n=-1, delta_R_min=float('-inf'), delta_R_ma
     print("[data] Getting octet pixel data ...")
   else:
     print("[data] Getting singlet pixel data ...")
-  npyfile = constants.DATA_NPY
+  h5file = constants.DATA_H5
   # Get the appropriate numpy array, either from a saved .npy file or
   # from the original .txt file.
   if recalculate:
@@ -39,19 +40,19 @@ def get_pixels_metadata(octet=False, n=-1, delta_R_min=float('-inf'), delta_R_ma
     with open(npyfile, 'wb+') as npyfile_handle:
       np.save(npyfile_handle, data)
   else:
-    print("[data] Loading from {} ...".format(npyfile))
-    data = np.load(npyfile)
+    print("[data] Loading from {} ...".format(h5file))
+    data = h5py.File(h5file, 'r')
 
-  mask = (data['signal'] > 0)
+  mask = (data['meta_variables/signal'][()] > 0)
   size = mask.shape[0]
 
   metadata = np.zeros((size, 4))
-  metadata[:, 0] = data['pull1']
-  metadata[:, 1] = data['pull2']
-  metadata[:, 2] = data['jet_mass']
-  metadata[:, 3] = data['jet_delta_R']
+  metadata[:, 0] = data['meta_variables/pull1'][()]
+  metadata[:, 1] = data['meta_variables/pull2'][()]
+  metadata[:, 2] = data['meta_variables/jet_mass'][()]
+  metadata[:, 3] = data['meta_variables/jet_delta_R'][()]
 
-  pixels = data['image']
+  pixels = data['images'][()]
   if octet:
     mask = ~mask
   pixels = pixels[mask]

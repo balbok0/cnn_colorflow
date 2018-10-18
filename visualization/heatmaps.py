@@ -81,7 +81,7 @@ def main():
   import argparse
   parser = argparse.ArgumentParser(description='Plot clusters on given data.')
   parser.add_argument('--run_dir', default=None, help='The directory in which cluster plots should be saved.')
-  parser.add_argument('--cluster_dir', default=None, help='The directory where clusters.npy was saved.')
+  parser.add_argument('--cluster_dir', default='../clusters', help='The directory where clusters.npy was saved.')
   parser.add_argument('--n_clusters', '-n', default=20, help='The number of clusters used.')
   args = parser.parse_args()
   if not args.run_dir:

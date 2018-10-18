@@ -11,11 +11,16 @@ if not os.path.exists(BASE_DIR):
   exit()
 RUN_DIR = os.path.join(BASE_DIR, 'runs')
 DATA_DIR = os.path.join(BASE_DIR, 'samples')
-ROTATED_NPY = os.path.join(DATA_DIR, 'rotated.npy')
-NROTATED_NPY = os.path.join(DATA_DIR, 'not_rotated.npy')
-SIZE50_NPY = os.path.join(DATA_DIR, 'size50.npy')
-SIZE100_NPY = os.path.join(DATA_DIR, 'size100.npy')
-DATA_NPY = NROTATED_NPY #change to select default data
+
+#    old data
+#ROTATED_NPY = os.path.join(DATA_DIR, 'rotated.npy')
+#NROTATED_NPY = os.path.join(DATA_DIR, 'not_rotated.npy')
+#SIZE50_NPY = os.path.join(DATA_DIR, 'size50.npy')
+#SIZE100_NPY = os.path.join(DATA_DIR, 'size100.npy')
+
+NEW65_H5 = os.path.join(DATA_DIR, 'both65.h5')
+
+DATA_H5 = NEW65_H5 #change to select default data
 WEIGHTS_DIR = 'weights'
 TEST_DIR = 'test_samples'
 VIS_DIR = 'vis'
