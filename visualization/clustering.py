@@ -1,5 +1,4 @@
 import os
-
 import numpy as np
 from sklearn.cluster import KMeans
 from matplotlib import pyplot as plt
