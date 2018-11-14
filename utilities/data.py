@@ -109,8 +109,8 @@ def get_train_test(n=-1, delta_R_min=float("-inf"), delta_R_max=float("inf"),  w
   bg_weights = np.ones(bg_pixels.shape[0])
   weights = np.concatenate((bg_weights, sig_weights), axis=0)
   # Reshape the pixels into 2D images
-  bg_pixels = bg_pixels.reshape(bg_pixels.shape[0], 1, bg_pixels.shape[1], bg_pixels.shape[2])
-  sig_pixels = sig_pixels.reshape(sig_pixels.shape[0], 1, sig_pixels.shape[1], sig_pixels.shape[2])
+  bg_pixels = bg_pixels.reshape(bg_pixels.shape[0], bg_pixels.shape[1], bg_pixels.shape[2], 1)
+  sig_pixels = sig_pixels.reshape(sig_pixels.shape[0], sig_pixels.shape[1], sig_pixels.shape[2], 1)
   bg_y = np.zeros(bg_pixels.shape[0])
   sig_y = np.ones(sig_pixels.shape[0])
   X = np.concatenate((bg_pixels, sig_pixels), axis=0)

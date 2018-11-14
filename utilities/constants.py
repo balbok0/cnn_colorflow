@@ -25,7 +25,7 @@ WEIGHTS_DIR = 'weights'
 TEST_DIR = 'test_samples'
 VIS_DIR = 'vis'
 MODEL_NAME = 'best_model_cnn.hdf5'
-THEANO = True #tell keras to use theano
+THEANO = False #tell keras to use theano
 
 if not os.path.exists(RUN_DIR):
   os.makedirs(RUN_DIR)

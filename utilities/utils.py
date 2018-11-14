@@ -31,11 +31,11 @@ def get_model_test(run_dir):
 def merge(in1, in2, out):
   inFile1 = np.load(in1)
   inFile2 = np.load(in2)
-  print 'Input1 Shape: ' + str(inFile1.shape)
-  print 'Input2 Shape: ' + str(inFile2.shape)
+  print('Input1 Shape: ' + str(inFile1.shape))
+  print('Input2 Shape: ' + str(inFile2.shape))
 
   outFile = np.concatenate((inFile1, inFile2))
-  print 'Output Shape: ' + str(outFile.shape)
+  print('Output Shape: ' + str(outFile.shape))
 
   np.save(out, outFile)
 
@@ -48,13 +48,13 @@ def main():
   
   if args.fName == 'merge':
     if len(args.args) != 3:
-      print 'Invalid Number of Arguments'
+      print('Invalid Number of Arguments')
     else:
       merge(constants.BASE_DIR + '/samples/' + args.args[0],
             constants.BASE_DIR + '/samples/' + args.args[1],
             constants.BASE_DIR + '/samples/' + args.args[2])
   else:
-    print 'Invalid Function Name'
+    print('Invalid Function Name')
 
 if __name__ == '__main__':
   main()

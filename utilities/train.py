@@ -7,8 +7,6 @@ import data
 import utils
 
 def train_model_save(X_train, X_test, y_train, y_test, weights_train, model_dir, file_name, dropout=0.5, dense_width=125, conv_width=16, batch_size=1024, epochs=200, recalc=False):
-  from keras import backend as K
-  K.set_image_dim_ordering('th')
   from keras.models import load_model
 
   modelFileName = model_dir + '/' + file_name
@@ -40,9 +38,6 @@ def train_model(X_train, X_test, y_train, y_test, weights_train, model_dir, drop
   epochs -- the number of epochs to run when training.
   """
   print('[train] Loading keras ...')
-
-  from keras import backend as K
-  K.set_image_dim_ordering('th')
 
   from keras.models import Sequential
   from keras.layers.core import Dense, Dropout, Activation, Flatten
