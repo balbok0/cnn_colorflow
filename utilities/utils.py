@@ -24,8 +24,7 @@ def most_recent_dir():
 
 def get_model_test(run_dir):
   model = load_model(os.path.join(run_dir, constants.WEIGHTS_DIR, constants.MODEL_NAME))
-  X_test = np.load(os.path.join(run_dir, constants.TEST_DIR, 'X_test.npy'))
-  y_test = np.load(os.path.join(run_dir, constants.TEST_DIR, 'y_test.npy'))
+  _, X_test, _, y_test, _, _ = data.get_train_test()
   return model, X_test, y_test
 
 def merge(in1, in2, out):

@@ -21,11 +21,13 @@ DATA_DIR = os.path.join(BASE_DIR, 'samples')
 NEW65_H5 = os.path.join(DATA_DIR, 'both65.h5')
 
 DATA_H5 = NEW65_H5 #change to select default data
-WEIGHTS_DIR = 'weights'
+WEIGHTS_DIR = ''
 TEST_DIR = 'test_samples'
 VIS_DIR = 'vis'
-MODEL_NAME = 'best_model_cnn.hdf5'
+MODEL_NAME = '11_8_7_0.5_relu_128_1_nadam_0.0003_0.1533575891807041.hdf5'
 THEANO = False #tell keras to use theano
+
+DATA_SIZE = 65
 
 if not os.path.exists(RUN_DIR):
   os.makedirs(RUN_DIR)
