@@ -18,7 +18,7 @@ def train_model_save(X_train, X_test, y_train, y_test, weights_train, model_dir,
 
   return model
 
-def train_model(X_train, X_test, y_train, y_test, weights_train, model_dir, dropout=0.5, dense_width=125, conv_width=16, batch_size=1024, epochs=200):
+def train_model(X_train, X_test, y_train, y_test, weights_train, model_dir, dropout=0.5, dense_width=128, conv_width=8, batch_size=1024, epochs=200):
   """ Return the model trained on the given data with the given weights.
   Return:
   model -- the keras model trained on the given data.
@@ -42,20 +42,21 @@ def train_model(X_train, X_test, y_train, y_test, weights_train, model_dir, drop
   from keras.models import Sequential
   from keras.layers.core import Dense, Dropout, Activation, Flatten
   from keras.layers.convolutional import MaxPooling2D, Conv2D
-  from keras.optimizers import RMSprop
+  from keras.optimizers import Nadam
   from keras.callbacks import ModelCheckpoint
 
   print('[train] Building model...')
 
   model = Sequential()
 
-  model.add(Conv2D(conv_width, (11, 11), input_shape=(1, X_train.shape[2], X_train.shape[3]), padding='same'))
+  model.add(Conv2D(conv_width, (11, 11), input_shape=(X_train.shape[1], X_train.shape[2], 1)))
   model.add(Activation('relu'))
-  model.add(MaxPooling2D((2, 2)))
 
-  model.add(Conv2D(conv_width * 2, (3, 3), padding='same'))
-  model.add(Activation('relu'))
-  model.add(MaxPooling2D((2, 2)))
+  for i in range(7):
+    model.add(Conv2D(conv_width * 2, (3, 3)))
+    model.add(Activation('relu'))
+    if i % 2 == 1:
+      model.add(MaxPooling2D((2, 2)))
 
   model.add(Flatten())
 
@@ -63,14 +64,10 @@ def train_model(X_train, X_test, y_train, y_test, weights_train, model_dir, drop
   model.add(Activation('relu'))
   model.add(Dropout(dropout))
 
-  model.add(Dense(dense_width))
-  model.add(Activation('relu'))
-  model.add(Dropout(dropout))
-
   model.add(Dense(1))
-  model.add(Activation('sigmoid'))
+  model.add(Activation('relu'))
 
-  model.compile(optimizer=RMSprop(lr=0.0003), loss='binary_crossentropy', metrics=['mae'])
+  model.compile(optimizer=Nadam(lr=0.0003, schedule_decay = 0.153), loss='binary_crossentropy', metrics=['mae'])
   model.summary()
 
   saved_model_path = os.path.join(model_dir, constants.MODEL_NAME)

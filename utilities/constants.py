@@ -20,7 +20,9 @@ DATA_DIR = os.path.join(BASE_DIR, 'samples')
 
 NEW65_H5 = os.path.join(DATA_DIR, 'both65.h5')
 
-DATA_H5 = NEW65_H5 #change to select default data
+SIG_H5 = NEW65_H5 #change to select default data
+BG_H5 = NEW65_H5
+
 WEIGHTS_DIR = ''
 TEST_DIR = 'test_samples'
 VIS_DIR = 'vis'

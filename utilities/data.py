@@ -6,7 +6,7 @@ from sklearn.model_selection import train_test_split
 
 import constants
 
-def get_pixels_metadata(octet=False, n=-1, delta_R_min=float('-inf'), delta_R_max=float('inf'), recalculate=False):
+def get_pixels_metadata(bg=False, n=-1, delta_R_min=float('-inf'), delta_R_max=float('inf'), recalculate=False):
   """Return pixel data and metadata for either the octets or singlets.
 
   Return:
@@ -25,11 +25,12 @@ def get_pixels_metadata(octet=False, n=-1, delta_R_min=float('-inf'), delta_R_ma
   The pixel data is a (n, 625) numpy array.
   The metadata is a (n, 4) pandas array.
   """
-  if octet:
-    print("[data] Getting octet pixel data ...")
+
+  print("[data] Getting pixel data ...")
+  if bg:
+    h5file = constants.BG_H5
   else:
-    print("[data] Getting singlet pixel data ...")
-  h5file = constants.DATA_H5
+    h5file = constants.SIG_H5
   # Get the appropriate numpy array, either from a saved .npy file or
   # from the original .txt file.
   if recalculate:
@@ -43,8 +44,7 @@ def get_pixels_metadata(octet=False, n=-1, delta_R_min=float('-inf'), delta_R_ma
     print("[data] Loading from {} ...".format(h5file))
     data = h5py.File(h5file, 'r')
 
-  mask = (data['meta_variables/signal'][()] > 0)
-  size = mask.shape[0]
+  size = data['meta_variables/pull1'][()].shape[0]
 
   metadata = np.zeros((size, 4))
   metadata[:, 0] = data['meta_variables/pull1'][()]
@@ -53,21 +53,42 @@ def get_pixels_metadata(octet=False, n=-1, delta_R_min=float('-inf'), delta_R_ma
   metadata[:, 3] = data['meta_variables/jet_delta_R'][()]
 
   pixels = data['images'][()]
-  if octet:
-    mask = ~mask
-  pixels = pixels[mask]
-  metadata = metadata[mask]
-  if n != -1:
-    frac = float(np.sum(mask)) / float(size)
-    pixels = pixels[:int(n*frac)]
-    metadata = metadata[:int(n*frac)]
 
   metadata = pd.DataFrame(metadata, columns=['pull_1', 'pull_2', 'mass', 'delta_R'])
   # Restrict delta R
   pixels = pixels[np.where((metadata['delta_R'] <= delta_R_max) & (metadata['delta_R'] >= delta_R_min))]
-  print("[data] {} pixels shape: {}".format("octet" if octet else "singlet", pixels.shape))
-  print("[data] {} metadata head:\n {}".format("octet" if octet else "singlet", metadata.head()))
+  print("[data] {} pixels shape: {}".format("bg" if bg else "sig", pixels.shape))
+  print("[data] {} metadata head:\n {}".format("bg" if bg else "sig", metadata.head()))
   return pixels, metadata
+
+def preprocess(X_train, X_test):
+  def shape(arr):
+    return arr.reshape(arr.shape[0], arr.shape[1] * arr.shape[2] * arr.shape[3])
+
+  def myNorm(arr, ord):
+    size = arr.shape[0]
+    return np.power(np.sum(np.power(np.abs(arr), ord), axis=0), 1.0/float(size))
+  
+  def safeLog(arr):
+    eps = -6
+    mask = (arr==0)
+    arr = np.log(arr)
+    arr[mask] = eps
+    arr[arr<eps] = eps
+    return 1+arr/6 #put back into reasonable range
+
+  def safeNorm(arr, ord): #implement own norm, this one sucks
+    arr = shape(arr)
+    arr = myNorm(arr, ord)
+    arr[arr==0] = 1 #only occurs in pixels that are always 0 anyways
+    return deshape(arr)
+    
+    X_train_log = safeLog(X_train)
+    X_test_log = safeLog(X_test)
+    X_train_log_norm1 = X_train_log/safeNorm(X_train_log, 1)
+    X_test_log_norm1 = X_test_log/safeNorm(X_train_log, 1)
+
+  return [X_train_log_norm1, X_test_log_norm1]
 
 def get_train_test(n=-1, delta_R_min=float("-inf"), delta_R_max=float("inf"),  weighting_mass=False, train_size=0.8):
   """Returns X, y, and weight arrays for training and testing.
@@ -88,8 +109,8 @@ def get_train_test(n=-1, delta_R_min=float("-inf"), delta_R_max=float("inf"),  w
                     binned by mass, the number of weighted singlet samples in
                     each bin is equivalent to the number of octet samples.
   """
-  bg_pixels, bg_metadata = get_pixels_metadata(octet=True, n=n, delta_R_min=delta_R_min, delta_R_max=delta_R_max)
-  sig_pixels, sig_metadata = get_pixels_metadata(octet=False, n=n, delta_R_min=delta_R_min, delta_R_max=delta_R_max)
+  bg_pixels, bg_metadata = get_pixels_metadata(bg=True, n=n, delta_R_min=delta_R_min, delta_R_max=delta_R_max)
+  sig_pixels, sig_metadata = get_pixels_metadata(bg=False, n=n, delta_R_min=delta_R_min, delta_R_max=delta_R_max)
   sig_weights = np.ones(sig_pixels.shape[0])
   # Calculate weights.
   if weighting_mass:
@@ -115,7 +136,11 @@ def get_train_test(n=-1, delta_R_min=float("-inf"), delta_R_max=float("inf"),  w
   sig_y = np.ones(sig_pixels.shape[0])
   X = np.concatenate((bg_pixels, sig_pixels), axis=0)
   y = np.concatenate((bg_y, sig_y), axis=0)
-  return train_test_split(X, y, weights, train_size=train_size)
+
+  X_train, X_test, y_train, y_test, weights_train, weights_test = train_test_split(X, y, weights, train_size=train_size)
+  X_train, X_test = preprocess(X_train, X_test)
+
+  return [X_train, X_test, y_train, y_test, weights_train, weights_test, sig_metadata, bg_metadata, y]
 
 def main():
   X_train, X_test, y_train, y_test, weights_train, weights_test = get_train_test()
