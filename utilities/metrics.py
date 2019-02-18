@@ -27,9 +27,10 @@ def plot_roc(title, fname, X_test, y_test, model, show=False):
 def plot_sic(title, fname, X_test, y_test, model, show=False):
   y_score = model.predict(X_test, verbose=2)
   fpr, tpr, _ = roc_curve(y_test, y_score)
-  sic = tpr / np.sqrt(fpr)
+  sic = np.divide(tpr, np.sqrt(fpr), out=np.zeros_like(tpr), where=np.sqrt(fpr)!=0)
   plt.clf()
   plt.plot(tpr, sic, lw=2, drawstyle='steps-post', color='red')
+  plt.text(0.6, 0.2, "Max SIC = {:.3}".format(np.max(sic)), fontsize=17, weight=550)
   plt.xlabel('true positive rate', fontsize=15)
   plt.ylabel('tpr/sqrt(fpr)', fontsize=15)
   plt.title(title, fontsize=19)

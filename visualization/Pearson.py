@@ -9,13 +9,13 @@ import constants
 import utils
 import data
 
-size = 65
+size = constants.DATA_SIZE
 
 def plot_pearson(run_dir, save_dir, show=False, only_true=False):
   if not only_true:
     model, X_test, y_test = utils.get_model_test(run_dir)
   else:
-    _, X_test, _, y_test, _, _ = data.get_train_test()
+    _, X_test, _, y_test, _, _, _, _, _ = data.get_train_test()
     X_test = X_test.reshape(X_test.shape[0], size*size)
 
   y_pearson = np.zeros(X_test.shape)
@@ -59,7 +59,6 @@ def plot_pearson(run_dir, save_dir, show=False, only_true=False):
   plt.ylabel('Proportional to Translated Azimuthal Angle', fontsize=10)
   plt.title('PCC for pixel intensity and network output', fontsize=15)
   plt.colorbar()
-  save_dir = os.path.join(run_dir, 'Pearson')
   plt.savefig(os.path.join(save_dir, 'Pearson_net.png'))
   if show:
     plt.show()

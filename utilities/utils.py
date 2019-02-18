@@ -6,6 +6,7 @@ import numpy as np
 from keras.models import load_model
 
 import constants
+import data
 if constants.THEANO:
   from keras import backend as K
   K.set_image_dim_ordering('th')
@@ -24,7 +25,7 @@ def most_recent_dir():
 
 def get_model_test(run_dir):
   model = load_model(os.path.join(run_dir, constants.WEIGHTS_DIR, constants.MODEL_NAME))
-  _, X_test, _, y_test, _, _ = data.get_train_test()
+  _, X_test, _, y_test, _, _, _, _, _ = data.get_train_test()
   return model, X_test, y_test
 
 def merge(in1, in2, out):
