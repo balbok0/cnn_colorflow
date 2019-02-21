@@ -48,13 +48,20 @@ def get_pixels_metadata(bg=False, n=-1, delta_R_min=float('-inf'), delta_R_max=f
   sig_cutoff = int(np.sum(data['meta_variables/signal'][()]))
   size = data['meta_variables/pull1'][()].shape[0]
 
-  metadata = np.zeros((size, 4))
-  metadata[:, 0] = np.array(data['meta_variables/pull1'][()])
-  metadata[:, 1] = np.array(data['meta_variables/pull2'][()])
-  metadata[:, 2] = np.array(data['meta_variables/jet_mass'][()])
-  metadata[:, 3] = np.array(data['meta_variables/jet_delta_R'][()])
-
-  pixels = data['images'][()]
+  if n == -1:
+    metadata = np.zeros((size, 4))
+    metadata[:, 0] = np.array(data['meta_variables/pull1'][()])
+    metadata[:, 1] = np.array(data['meta_variables/pull2'][()])
+    metadata[:, 2] = np.array(data['meta_variables/jet_mass'][()])
+    metadata[:, 3] = np.array(data['meta_variables/jet_delta_R'][()])
+    pixels = data['images'][()]
+  else:
+    metadata = np.zeros((n, 4))
+    metadata[:, 0] = np.array(data['meta_variables/pull1'][:n])
+    metadata[:, 1] = np.array(data['meta_variables/pull2'][:n])
+    metadata[:, 2] = np.array(data['meta_variables/jet_mass'][:n])
+    metadata[:, 3] = np.array(data['meta_variables/jet_delta_R'][:n])
+    pixels = data['images'][:n]
 
   metadata = pd.DataFrame(metadata, columns=['pull_1', 'pull_2', 'mass', 'delta_R'])
   # Restrict delta R
