@@ -24,7 +24,8 @@ def plot_roc(title, fname, X_test, y_test, model, show=False, use2 = False, X_te
 
   plt.plot([0,1], [0,1], 'r--')
   plt.text(0.4, 0.2, "AUC Net = {:.3}".format(AUC), fontsize=17, weight=550)
-  plt.text(0.4, 0.1, "AUC Obs = {:.3}".format(AUC2), fontsize=17, weight=550)
+  if use2:
+    plt.text(0.4, 0.1, "AUC Obs = {:.3}".format(AUC2), fontsize=17, weight=550)
 
   plt.xlim([0, 1])
   plt.ylim([0, 1.05])
@@ -53,7 +54,8 @@ def plot_sic(title, fname, X_test, y_test, model, show=False, use2 = False, X_te
 
 
   plt.text(0.4, 0.2, "Max SIC Net = {:.3}".format(np.max(sic)), fontsize=17, weight=550)
-  plt.text(0.4, 0.1, "Max SIC Obs = {:.3}".format(np.max(sic2)), fontsize=17, weight=550)
+  if use2:
+    plt.text(0.4, 0.1, "Max SIC Obs = {:.3}".format(np.max(sic2)), fontsize=17, weight=550)
   plt.xlabel('true positive rate', fontsize=15)
   plt.ylabel('tpr/sqrt(fpr)', fontsize=15)
   plt.title(title, fontsize=19)

@@ -16,23 +16,23 @@ usePrev = True
 def main():
     for cmp in range(4):
         if cmp == 0:
-            constants.SIG_H5 = os.path.join(constants.DATA_DIR, 'h_qq_charged_rot_nocut.h5')
-            constants.BG_H5 = os.path.join(constants.DATA_DIR, 'h_gg_charged_rot_nocut.h5')
+            constants.SIG_H5 = os.path.join(constants.DATA_DIR, 'h_qq_rot_charged.h5')
+            constants.BG_H5 = os.path.join(constants.DATA_DIR, 'h_gg_rot_charged.h5')
             sample = 'charged'
             cmps = ' qq vs gg'
         elif cmp == 1:
-            constants.SIG_H5 = os.path.join(constants.DATA_DIR, 'h_qq_standard_rot_nocut.h5')
-            constants.BG_H5 = os.path.join(constants.DATA_DIR, 'h_gg_standard_rot_nocut.h5')
+            constants.SIG_H5 = os.path.join(constants.DATA_DIR, 'h_qq_rot_standard.h5')
+            constants.BG_H5 = os.path.join(constants.DATA_DIR, 'h_gg_rot_standard.h5')
             sample = 'standard'
             cmps = ' qq vs gg'
         elif cmp == 3:
-            constants.SIG_H5 = os.path.join(constants.DATA_DIR, 'h_qq_standard_rot_nocut.h5')
-            constants.BG_H5 = os.path.join(constants.DATA_DIR, 'h_qq_charged_rot_nocut.h5')
+            constants.SIG_H5 = os.path.join(constants.DATA_DIR, 'h_qq_rot_standard.h5')
+            constants.BG_H5 = os.path.join(constants.DATA_DIR, 'h_qq_rot_charged.h5')
             sample = 'quarks'
             cmps =  ' charged v standard'
         else:
-            constants.SIG_H5 = os.path.join(constants.DATA_DIR, 'h_gg_standard_rot_nocut.h5')
-            constants.BG_H5 = os.path.join(constants.DATA_DIR, 'h_gg_charged_rot_nocut.h5')
+            constants.SIG_H5 = os.path.join(constants.DATA_DIR, 'h_gg_rot_standard.h5')
+            constants.BG_H5 = os.path.join(constants.DATA_DIR, 'h_gg_rot_charged.h5')
             sample = 'gluons' 
             cmps = ' charged v standard'
 
@@ -44,12 +44,13 @@ def main():
         train(X_train, X_test, y_train, \
                 y_test, weights_train, sample, cmps)
         
-        makeImage(np.mean(X_train[y_train==1.0], axis=0), 'Average_' + sample + '_quark')
-        makeImage(np.mean(X_train[y_train==0.0], axis=0), 'Average_' + sample + '_gluon')
+        if cmp < 2:
+            makeImage(np.mean(X_train[y_train==1.0], axis=0), 'Average_' + sample + '_quark')
+            makeImage(np.mean(X_train[y_train==0.0], axis=0), 'Average_' + sample + '_gluon')
 
 def train(X_train, X_test, y_train, \
                 y_test, weights_train, name, cmps):
-    if usePrev:
+    if usePrev and os.path.isfile('../best_model/' + name + '_model'):
         from keras.models import load_model
         model = load_model('../best_model/' + name + '_model')
     else:
