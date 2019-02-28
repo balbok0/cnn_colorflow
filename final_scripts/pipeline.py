@@ -55,8 +55,7 @@ def main():
             plot_sic(model_name, 'final_curves/sic_'+model_name, X_test, y_test, model, use2 = True, X_test2 = obs_test, model2 = obs_model)
             plot_roc(model_name, 'final_curves/roc_'+model_name, X_test, y_test, model, use2 = True, X_test2 = obs_test, model2 = obs_model)
 
-            if j == 0 and i == 1:
-                plot_pearson('../best_model/', 'final_curves/pearsons/', model_name, show_obs=True, provide_data=True, X_test=X_test, y_test=y_test, model=model)
+            plot_pearson('../best_model/', 'final_curves/pearsons/', model_name, show_obs=True, provide_data=True, X_test=X_test, y_test=y_test, model=model)
 
 def train(X_train, X_test, y_train, \
                 y_test, weights_train, name):
