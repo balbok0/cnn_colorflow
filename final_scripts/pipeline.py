@@ -12,9 +12,11 @@ import constants
 from data import get_train_test, preprocess
 from train import train_model
 from Pearson import plot_pearson
-from metrics import plot_sic, plot_roc
+from metrics import plot_sic, plot_roc, n_hyp
 
+#datasets = ['h_qq_rot_charged', 'h_gg_rot_charged', 'cp_qq_rot_charged', 'qx_qg_rot_charged', 's8_gg_rot_charged', 'zp_qq_rot_charged']
 datasets = ['h_qq', 'h_gg', 'cp_qq', 'qx_qg', 's8_gg', 'zp_qq']
+
 usePrev = True
 n = 150000
 def main():
@@ -31,10 +33,7 @@ def main():
             constants.SIG_H5 = os.path.join(constants.DATA_DIR, sig + '.h5')
             constants.BG_H5 = os.path.join(constants.DATA_DIR, bg + '.h5')
 
-            model_dir = 'best_model'
-            fig_dir = 'final_figures'
-            model_name = sig + ' vs ' + bg
-
+            model_name = sig + ' vs ' + bg + ' charged'
             constants.MODEL_NAME= model_name + '_model'
 
             X_train, X_test, y_train, y_test, \
@@ -100,8 +99,36 @@ def adaboost(X, y):
     bdt.fit(X, y)
     return bdt
 
-        
+# do hypothesis tests
+def main2():
+    n_hyp_tbl = np.zeros((len(datasets), len(datasets))) - 1
+    n=1000
+    for i in range(6):
+        for j in range(6):
+            if j >= i:
+                continue
+            sig = datasets[i]
+            bg = datasets[j]
+
+            constants.SIG_H5 = os.path.join(constants.DATA_DIR, sig + '.h5')
+            constants.BG_H5 = os.path.join(constants.DATA_DIR, bg + '.h5')
+
+            model_name = sig + ' vs ' + bg
+            constants.MODEL_NAME= model_name + '_model'
+
+            X_train, X_test, y_train, y_test, \
+            weights_train, weights_test, sig_metadata, \
+            bg_metadata, _ = get_train_test(n=n)
+
+            model = train(X_train, X_test, y_train, \
+                y_test, weights_train, model_name)
+
+            n_hyp_tbl[i, j] = n_hyp(X_test, y_test, model, flip=0)
+            n_hyp_tbl[j, i] = n_hyp(X_test, y_test, model, flip=1)
+            
+            print(n_hyp_tbl)
+
 if __name__ == '__main__':
-  main()
+  main2()
         
 

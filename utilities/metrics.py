@@ -2,10 +2,33 @@ import os
 
 import numpy as np
 from sklearn.metrics import roc_curve, auc
+from scipy.stats import ttest_ind
 import matplotlib.pyplot as plt
 
 import constants
 import utils
+
+def n_hyp(X_test, y_test, model, flip=0):
+  y_score = model.predict(X_test)
+  y_score = y_score[:, 0] > 0.5
+  
+  if flip:
+    tp = y_test[np.invert(y_score)]
+  else:
+    tp = y_test[y_score]
+    
+  for n in range(tp.shape[0]):
+    if flip:
+      n_s = np.sum(1-tp[:n])
+      n_o = np.sum(tp[:n])
+    else:
+      n_s = np.sum(tp[:n])
+      n_o = np.sum(1-tp[:n])
+
+    if (n_s-n_o) > 2*np.sqrt(n_s):
+      return n
+  return -1
+
 
 def plot_roc(title, fname, X_test, y_test, model, show=False, use2 = False, X_test2 = None, model2 = None):
   plt.clf()

@@ -2,7 +2,8 @@ import sys
 import os
 from PIL import Image, ImageDraw, ImageFont
 
-datasets = ['s8_gg', 'h_qq', 'qx_qg', 'cp_qq', 'h_gg', 'zp_qq']
+#datasets = ['s8_gg', 'h_qq', 'qx_qg', 'cp_qq', 'h_gg', 'zp_qq']
+datasets = ['h_qq_rot_charged', 'h_gg_rot_charged', 'cp_qq_rot_charged', 'qx_qg_rot_charged', 's8_gg_rot_charged', 'zp_qq_rot_charged']
 
 def main():
     images = []
@@ -13,7 +14,7 @@ def main():
 
             sig = datasets[i]
             bg = datasets[j]
-            path = c_path(roc_path, sig, bg)
+            path = c_path(pcc_path, sig, bg)
             images.append(Image.open(path))
 
     width, height = images[0].size
@@ -36,7 +37,7 @@ def main():
             y_offset += 1
             x_offset = y_offset
 
-    comb_im.save('final_curves/all_roc.png')
+    comb_im.save('final_curves/all_pcc.png')
 
 def c_path(path_f, sig, bg):
     if os.path.isfile(path_f(sig, bg)):
@@ -45,11 +46,11 @@ def c_path(path_f, sig, bg):
         return path_f(bg, sig)
 
 def pcc_path(sig, bg):
-    return 'final_curves/pearsons/truths/' + sig + ' vs ' + bg + '_pearson_truth.png'
+    return 'final_curves/pearsons/truths/' + sig + ' vs ' + bg + ' charged_pearson_truth.png'
 def sic_path(sig, bg):
-    return 'final_curves/sic_' + sig + ' vs ' + bg + '.png'
+    return 'final_curves/sic_' + sig + ' vs ' + bg + ' charged.png'
 def roc_path(sig, bg):
-    return 'final_curves/roc_' + sig + ' vs ' + bg + '.png'
+    return 'final_curves/roc_' + sig + ' vs ' + bg + ' charged.png'
 def img_path(sig):
     return 'final_curves/Average_' + sig + '.png'
 
@@ -73,4 +74,4 @@ def main2():
     comb_im.save('final_curves/all_img.png')
 
 if __name__ == '__main__':
-  main()
+  main2()
