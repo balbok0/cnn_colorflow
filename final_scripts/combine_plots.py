@@ -3,7 +3,7 @@ import os
 from PIL import Image, ImageDraw, ImageFont
 
 #datasets = ['s8_gg', 'h_qq', 'qx_qg', 'cp_qq', 'h_gg', 'zp_qq']
-datasets = ['h_qq_rot_charged', 'h_gg_rot_charged', 'cp_qq_rot_charged', 'qx_qg_rot_charged', 's8_gg_rot_charged', 'zp_qq_rot_charged']
+datasets = ['s8_gg_rot_charged', 'h_qq_rot_charged', 'qx_qg_rot_charged', 'cpp_qq_rot_charged', 'h_gg_rot_charged', 'zp_qq_rot_charged']
 
 def main():
     images = []
@@ -22,7 +22,7 @@ def main():
     comb_im = Image.new('RGB', (width * 6 + txt_offset, height * 6 + txt_offset), color=(255,255,255))
 
     draw = ImageDraw.Draw(comb_im)
-    font = ImageFont.truetype("../../Roboto-Black.ttf", 120)
+    font = ImageFont.truetype("../../Roboto-Black.ttf", 50)
     for i in range(6):
         center_offset = 180
         draw.text((txt_offset + center_offset + width*i, 0), datasets[i], (0,0,0),font=font)
@@ -74,4 +74,4 @@ def main2():
     comb_im.save('final_curves/all_img.png')
 
 if __name__ == '__main__':
-  main2()
+  main()

@@ -19,7 +19,7 @@ datasets = ['h_qq', 'h_gg', 'cp_qq', 'qx_qg', 's8_gg', 'zp_qq']
 
 usePrev = True
 n = 150000
-def main():
+def pipeline():
     for i in range(6):
         for j in range(6):
             if j >= i:
@@ -100,9 +100,9 @@ def adaboost(X, y):
     return bdt
 
 # do hypothesis tests
-def main2():
+def hyptest():
     n_hyp_tbl = np.zeros((len(datasets), len(datasets))) - 1
-    n=1000
+    n=10000
     for i in range(6):
         for j in range(6):
             if j >= i:
@@ -128,7 +128,41 @@ def main2():
             
             print(n_hyp_tbl)
 
+def histos():
+    def hist(x, title):
+        plt.clf()
+        plt.hist(x, bins = 20)
+        plt.title(title, fontsize=14)
+        plt.savefig('final_curves/hists/'+title)
+
+    n=10000
+    for i in range(6):
+        for j in range(6):
+            if j >= i:
+                continue
+            sig = datasets[i]
+            bg = datasets[j]
+
+            constants.SIG_H5 = os.path.join(constants.DATA_DIR, sig + '.h5')
+            constants.BG_H5 = os.path.join(constants.DATA_DIR, bg + '.h5')
+
+            X_train, X_test, y_train, y_test, \
+            weights_train, weights_test, sig_metadata, \
+            bg_metadata, _ = get_train_test(n=n)
+
+            obs_train = calcObs(X_train)
+            sig_obs = obs_train[y_train == 1]
+            bg_obs = obs_train[y_train == 0]
+
+            name =  sig + ' vs ' + bg + '_'
+            hist([sig_metadata.iloc[:, 0], bg_metadata.iloc[:, 0]], name+'pull1')
+            hist([sig_metadata.iloc[:, 1], bg_metadata.iloc[:, 1]], name+'pull2')
+            hist([sig_obs[:, 0], bg_obs[:, 0]], name+'obs1')
+            hist([sig_obs[:, 1], bg_obs[:, 1]], name+'obs2')
+            hist([sig_obs[:, 2], bg_obs[:, 2]], name+'obs3')
+            hist([sig_obs[:, 3], bg_obs[:, 3]], name+'obs4')
+
 if __name__ == '__main__':
-  main2()
+  hyptest()
         
 
