@@ -2,19 +2,29 @@ import sys
 import os
 from PIL import Image, ImageDraw, ImageFont
 
-#datasets = ['s8_gg', 'h_qq', 'qx_qg', 'cp_qq', 'h_gg', 'zp_qq']
-datasets = ['s8_gg_rot_charged', 'h_qq_rot_charged', 'qx_qg_rot_charged', 'cpp_qq_rot_charged', 'h_gg_rot_charged', 'zp_qq_rot_charged']
+datasets = ['s8_gg', 'h_qq', 'qx_qg', 'cp_qq', 'h_gg', 'zp_qq']
+datasets_c = ['s8_gg_rot_charged', 'h_qq_rot_charged', 'qx_qg_rot_charged', 'cp_qq_rot_charged', 'h_gg_rot_charged', 'zp_qq_rot_charged']
 
-def main():
+# for combine, 0 is pcc, 1 is roc, 2 is sic
+def u_tri(using_charged, combine):
     images = []
     for i in range(6):
         for j in range(6):
             if i >= j:
                 continue
 
-            sig = datasets[i]
-            bg = datasets[j]
-            path = c_path(pcc_path, sig, bg)
+            if combine == 0:
+                f_path = pcc_path
+            elif combine == 1:
+                f_path = roc_path
+            else:
+                f_path = sic_path
+
+            if using_charged:
+                path = c_path(f_path, datasets_c[i], datasets_c[j], True)
+            else:
+                path = c_path(f_path, datasets[i], datasets[j])
+
             images.append(Image.open(path))
 
     width, height = images[0].size
@@ -37,27 +47,47 @@ def main():
             y_offset += 1
             x_offset = y_offset
 
-    comb_im.save('final_curves/all_pcc.png')
-
-def c_path(path_f, sig, bg):
-    if os.path.isfile(path_f(sig, bg)):
-        return path_f(sig, bg)
+    path = 'final_curves/combined/all_'
+    if combine == 0:
+        path = path + 'pcc'
+    elif combine == 1:
+        path = path + 'roc'
     else:
-        return path_f(bg, sig)
+        path = path + 'sic'
+
+    if using_charged:
+        path = path + '_charged'
+    path = path + '.png'
+    comb_im.save(path)
+
+def c_path(path_f, sig, bg, charged = False):
+    if charged:
+        if os.path.isfile(path_f(sig, bg + ' charged')):
+            return path_f(sig, bg + ' charged')
+        else:
+            return path_f(bg, sig + ' charged')
+    else:
+        if os.path.isfile(path_f(sig, bg)):
+            return path_f(sig, bg)
+        else:
+            return path_f(bg, sig)
 
 def pcc_path(sig, bg):
-    return 'final_curves/pearsons/truths/' + sig + ' vs ' + bg + ' charged_pearson_truth.png'
+    return 'final_curves/pearsons/truths/' + sig + ' vs ' + bg + '_pearson_truth.png'
 def sic_path(sig, bg):
-    return 'final_curves/sic_' + sig + ' vs ' + bg + ' charged.png'
+    return 'final_curves/sic_' + sig + ' vs ' + bg + '.png'
 def roc_path(sig, bg):
-    return 'final_curves/roc_' + sig + ' vs ' + bg + ' charged.png'
+    return 'final_curves/roc_' + sig + ' vs ' + bg + '.png'
 def img_path(sig):
     return 'final_curves/Average_' + sig + '.png'
 
-def main2():
+def all_img(charged):
     images = []
     for i in range(6):
-        images.append(Image.open(img_path(datasets[i])))
+        if charged:
+            images.append(Image.open(img_path(datasets_c[i])))
+        else:
+            images.append(Image.open(img_path(datasets[i])))
 
     width, height = images[0].size
     comb_im = Image.new('RGB', (width * 3, height * 2), color=(255,255,255))
@@ -71,7 +101,16 @@ def main2():
             y_offset += 1
             x_offset = 0
 
-    comb_im.save('final_curves/all_img.png')
+    if charged:
+        comb_im.save('final_curves/combined/all_img_charged.png')
+    else:
+        comb_im.save('final_curves/combined/all_img.png')
+
+def cp_main():
+    for i in [False, True]:
+        all_img(i)
+        for j in range(3):
+            u_tri(i, j)
 
 if __name__ == '__main__':
-  main()
+  cp_main()

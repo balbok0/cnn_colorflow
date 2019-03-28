@@ -12,49 +12,14 @@ import constants
 from data import get_train_test, preprocess
 from train import train_model
 from Pearson import plot_pearson
-from metrics import plot_sic, plot_roc, n_hyp
+from metrics import plot_sic, plot_roc, n_pass_hyp
+from combine_plots import cp_main
 
 #datasets = ['h_qq_rot_charged', 'h_gg_rot_charged', 'cp_qq_rot_charged', 'qx_qg_rot_charged', 's8_gg_rot_charged', 'zp_qq_rot_charged']
 datasets = ['h_qq', 'h_gg', 'cp_qq', 'qx_qg', 's8_gg', 'zp_qq']
 
 usePrev = True
 n = 150000
-def pipeline():
-    for i in range(6):
-        for j in range(6):
-            if j >= i:
-                continue
-            # if j != 0 or i != 1: # for debugging, do only 1 run
-            #     break
-
-            sig = datasets[i]
-            bg = datasets[j]
-
-            constants.SIG_H5 = os.path.join(constants.DATA_DIR, sig + '.h5')
-            constants.BG_H5 = os.path.join(constants.DATA_DIR, bg + '.h5')
-
-            model_name = sig + ' vs ' + bg + ' charged'
-            constants.MODEL_NAME= model_name + '_model'
-
-            X_train, X_test, y_train, y_test, \
-            weights_train, weights_test, sig_metadata, \
-            bg_metadata, _ = get_train_test(n=n)
-
-            model = train(X_train, X_test, y_train, \
-                y_test, weights_train, model_name)
-        
-            makeImage(np.mean(X_train[y_train==1.0], axis=0), 'Average_' + sig)
-            makeImage(np.mean(X_train[y_train==0.0], axis=0), 'Average_' + bg)
-
-            obs_test = calcObs(X_test)
-            obs_train = calcObs(X_train)
-
-            obs_model = adaboost(obs_train, y_train)
-            
-            plot_sic(model_name, 'final_curves/sic_'+model_name, X_test, y_test, model, use2 = True, X_test2 = obs_test, model2 = obs_model)
-            plot_roc(model_name, 'final_curves/roc_'+model_name, X_test, y_test, model, use2 = True, X_test2 = obs_test, model2 = obs_model)
-
-            plot_pearson('../best_model/', 'final_curves/pearsons/', model_name, show_obs=True, provide_data=True, X_test=X_test, y_test=y_test, model=model)
 
 def train(X_train, X_test, y_train, \
                 y_test, weights_train, name):
@@ -99,8 +64,48 @@ def adaboost(X, y):
     bdt.fit(X, y)
     return bdt
 
+def do_all():
+    for i in range(6):
+        for j in range(6):
+            if j >= i:
+                continue
+            # if j != 0 or i != 1: # for debugging, do only 1 run
+            #     break
+
+            sig = datasets[i]
+            bg = datasets[j]
+
+            constants.SIG_H5 = os.path.join(constants.DATA_DIR, sig + '.h5')
+            constants.BG_H5 = os.path.join(constants.DATA_DIR, bg + '.h5')
+
+            model_name = sig + ' vs ' + bg + ' charged'
+            constants.MODEL_NAME= model_name + '_model'
+
+            X_train, X_test, y_train, y_test, \
+            weights_train, weights_test, sig_metadata, \
+            bg_metadata, _ = get_train_test(n=n)
+
+            model = train(X_train, X_test, y_train, \
+                y_test, weights_train, model_name)
+        
+            makeImage(np.mean(X_train[y_train==1.0], axis=0), 'Average_' + sig)
+            makeImage(np.mean(X_train[y_train==0.0], axis=0), 'Average_' + bg)
+
+            obs_test = calcObs(X_test)
+            obs_train = calcObs(X_train)
+
+            obs_model = adaboost(obs_train, y_train)
+            
+            plot_sic(model_name, 'final_curves/sic_'+model_name, X_test, y_test, model, use2 = True, X_test2 = obs_test, model2 = obs_model)
+            plot_roc(model_name, 'final_curves/roc_'+model_name, X_test, y_test, model, use2 = True, X_test2 = obs_test, model2 = obs_model)
+
+            plot_pearson('../best_model/', 'final_curves/pearsons/', model_name, show_obs=True, provide_data=True, X_test=X_test, y_test=y_test, model=model)
+    do_hyptest()
+    do_histos()
+    cp_main()
+
 # do hypothesis tests
-def hyptest():
+def do_hyptest():
     n_hyp_tbl = np.zeros((len(datasets), len(datasets))) - 1
     n=10000
     for i in range(6):
@@ -123,12 +128,12 @@ def hyptest():
             model = train(X_train, X_test, y_train, \
                 y_test, weights_train, model_name)
 
-            n_hyp_tbl[i, j] = n_hyp(X_test, y_test, model, flip=0)
-            n_hyp_tbl[j, i] = n_hyp(X_test, y_test, model, flip=1)
+            n_hyp_tbl[i, j] = n_pass_hyp(X_test, y_test, model, flip=0)
+            n_hyp_tbl[j, i] = n_pass_hyp(X_test, y_test, model, flip=1)
             
             print(n_hyp_tbl)
 
-def histos():
+def do_histos():
     def hist(x, title):
         plt.clf()
         plt.hist(x, bins = 20)
@@ -163,6 +168,6 @@ def histos():
             hist([sig_obs[:, 3], bg_obs[:, 3]], name+'obs4')
 
 if __name__ == '__main__':
-  hyptest()
+  do_hyptest()
         
 
