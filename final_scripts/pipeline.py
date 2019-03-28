@@ -102,12 +102,11 @@ def do_all():
             plot_pearson('../best_model/', 'final_curves/pearsons/', model_name, show_obs=True, provide_data=True, X_test=X_test, y_test=y_test, model=model)
     do_hyptest()
     do_histos()
-    cp_main()
 
 # do hypothesis tests
 def do_hyptest():
     n_hyp_tbl = np.zeros((len(datasets), len(datasets))) - 1
-    n=10000
+    n=1000
     for i in range(6):
         for j in range(6):
             if j >= i:
