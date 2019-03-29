@@ -135,7 +135,7 @@ def do_hyptest():
 def do_histos():
     def hist(x, title):
         plt.clf()
-        plt.hist(x, bins = 20)
+        plt.hist(x, bins = 20, histtype=u'step')
         plt.title(title, fontsize=14)
         plt.savefig('final_curves/hists/'+title)
 
@@ -167,6 +167,6 @@ def do_histos():
             hist([sig_obs[:, 3], bg_obs[:, 3]], name+'obs4')
 
 if __name__ == '__main__':
-  do_hyptest()
+  do_histos()
         
 
