@@ -15,14 +15,8 @@ from Pearson import plot_pearson
 from metrics import plot_sic, plot_roc, n_pass_hyp
 from combine_plots import cp_main
 
-#datasets = ['h_qq_rot_charged', 'h_gg_rot_charged', 'cp_qq_rot_charged', 'qx_qg_rot_charged', 's8_gg_rot_charged', 'zp_qq_rot_charged']
-datasets = ['h_qq', 'h_gg', 'cp_qq', 'qx_qg', 's8_gg', 'zp_qq']
-
-usePrev = True
-n = 150000
-
 def train(X_train, X_test, y_train, \
-                y_test, weights_train, name):
+                y_test, weights_train, name, usePrev=True):
     if usePrev and os.path.isfile('../best_model/' + name + '_model'):
         from keras.models import load_model
         model = load_model('../best_model/' + name + '_model')
@@ -39,7 +33,8 @@ def makeImage(arr, title):
     plt.ylabel('Proportional to Translated Azimuthal Angle', fontsize=7)
     plt.title(title, fontsize=14)
     plt.colorbar()
-    plt.savefig('final_curves/'+title)
+    plt.savefig('final_curves/'+title+'.png')
+    plt.savefig('final_curves/'+title+'.pdf')
 
 def calcObs(X):
     n = X.shape[0]
@@ -64,7 +59,7 @@ def adaboost(X, y):
     bdt.fit(X, y)
     return bdt
 
-def do_all():
+def do_train(datasets, ischarged, usePrev = True, n = 150000):
     for i in range(6):
         for j in range(6):
             if j >= i:
@@ -78,7 +73,9 @@ def do_all():
             constants.SIG_H5 = os.path.join(constants.DATA_DIR, sig + '.h5')
             constants.BG_H5 = os.path.join(constants.DATA_DIR, bg + '.h5')
 
-            model_name = sig + ' vs ' + bg + ' charged'
+            model_name = sig + ' vs ' + bg
+            if ischarged:
+                model_name = model_name + ' charged'
             constants.MODEL_NAME= model_name + '_model'
 
             X_train, X_test, y_train, y_test, \
@@ -86,7 +83,7 @@ def do_all():
             bg_metadata, _ = get_train_test(n=n)
 
             model = train(X_train, X_test, y_train, \
-                y_test, weights_train, model_name)
+                y_test, weights_train, model_name, usePrev=usePrev)
         
             makeImage(np.mean(X_train[y_train==1.0], axis=0), 'Average_' + sig)
             makeImage(np.mean(X_train[y_train==0.0], axis=0), 'Average_' + bg)
@@ -100,11 +97,9 @@ def do_all():
             plot_roc(model_name, 'final_curves/roc_'+model_name, X_test, y_test, model, use2 = True, X_test2 = obs_test, model2 = obs_model)
 
             plot_pearson('../best_model/', 'final_curves/pearsons/', model_name, show_obs=True, provide_data=True, X_test=X_test, y_test=y_test, model=model)
-    do_hyptest()
-    do_histos()
 
 # do hypothesis tests
-def do_hyptest():
+def do_hyptest(datasets, ischarged):
     n_hyp_tbl = np.zeros((len(datasets), len(datasets))) - 1
     n=1000
     for i in range(6):
@@ -118,6 +113,8 @@ def do_hyptest():
             constants.BG_H5 = os.path.join(constants.DATA_DIR, bg + '.h5')
 
             model_name = sig + ' vs ' + bg
+            if ischarged:
+                model_name = model_name + ' charged'
             constants.MODEL_NAME= model_name + '_model'
 
             X_train, X_test, y_train, y_test, \
@@ -132,14 +129,22 @@ def do_hyptest():
             
             print(n_hyp_tbl)
 
-def do_histos():
-    def hist(x, title):
+def do_histos(datasets):
+    def hist(x, title, log = False):
         plt.clf()
-        plt.hist(x, bins = 20, histtype=u'step')
-        plt.title(title, fontsize=14)
-        plt.savefig('final_curves/hists/'+title)
+        fig = plt.figure()
+        ax = fig.add_subplot(1, 1, 1)
+        ax.hist(x, bins = 20, histtype=u'step')  
+        if log:
+            ax.set_yscale('log')
+            plt.title(title + ' (log)', fontsize=14)
+        else:
+            plt.title(title, fontsize=14)
+        plt.savefig('final_curves/hists/'+title+'.png')
+        plt.savefig('final_curves/hists/'+title+'.pdf')
+        plt.close(fig)
 
-    n=10000
+    n=1000
     for i in range(6):
         for j in range(6):
             if j >= i:
@@ -163,10 +168,22 @@ def do_histos():
             hist([sig_metadata.iloc[:, 1], bg_metadata.iloc[:, 1]], name+'pull2')
             hist([sig_obs[:, 0], bg_obs[:, 0]], name+'obs1')
             hist([sig_obs[:, 1], bg_obs[:, 1]], name+'obs2')
-            hist([sig_obs[:, 2], bg_obs[:, 2]], name+'obs3')
-            hist([sig_obs[:, 3], bg_obs[:, 3]], name+'obs4')
+            hist([sig_obs[:, 2], bg_obs[:, 2]], name+'obs3', log=True)
+            hist([sig_obs[:, 3], bg_obs[:, 3]], name+'obs4', log=True)
+
+def main():
+    datasets_c = ['h_qq_rot_charged', 'h_gg_rot_charged', 'cp_qq_rot_charged', 'qx_qg_rot_charged', 's8_gg_rot_charged', 'zp_qq_rot_charged']
+    datasets_s = ['h_qq', 'h_gg', 'cp_qq', 'qx_qg', 's8_gg', 'zp_qq']
+
+    do_train(datasets_s, False)
+    do_hyptest(datasets_s, False)
+    do_histos(datasets_s)
+
+    do_train(datasets_c, True)
+    do_hyptest(datasets_c, True)
+    do_histos(datasets_c)
 
 if __name__ == '__main__':
-  do_histos()
+  main()
         
 
