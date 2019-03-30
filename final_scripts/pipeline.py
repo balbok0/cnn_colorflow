@@ -171,17 +171,22 @@ def do_histos(datasets):
             hist([sig_obs[:, 2], bg_obs[:, 2]], name+'obs3', log=True)
             hist([sig_obs[:, 3], bg_obs[:, 3]], name+'obs4', log=True)
 
-def main():
+def main(train=True, hyptest=True, histos=True):
     datasets_c = ['h_qq_rot_charged', 'h_gg_rot_charged', 'cp_qq_rot_charged', 'qx_qg_rot_charged', 's8_gg_rot_charged', 'zp_qq_rot_charged']
     datasets_s = ['h_qq', 'h_gg', 'cp_qq', 'qx_qg', 's8_gg', 'zp_qq']
 
-    do_train(datasets_s, False)
-    do_hyptest(datasets_s, False)
-    do_histos(datasets_s)
+    if train:
+        do_train(datasets_s, False)
+        do_train(datasets_c, True)
 
-    do_train(datasets_c, True)
-    do_hyptest(datasets_c, True)
-    do_histos(datasets_c)
+    if hyptest:
+        do_hyptest(datasets_s, False)
+        do_hyptest(datasets_c, True)
+
+    if histos:
+        do_histos(datasets_s)
+        do_histos(datasets_c)
+
 
 if __name__ == '__main__':
   main()
