@@ -44,6 +44,7 @@ def plot_pearson(run_dir, save_dir, name, show=False, only_true=False, show_obs=
     ax.add_patch(patches.Ellipse((32,53),5,12,linewidth=1,edgecolor='g',facecolor='none'))
 
   plt.savefig(save_dir + 'truths/' + name + '_pearson_truth.png')
+  plt.savefig(save_dir + 'truths/' + name + '_pearson_truth.pdf')
   if show:
     plt.show()
 
@@ -69,6 +70,7 @@ def plot_pearson(run_dir, save_dir, name, show=False, only_true=False, show_obs=
   plt.title('PCC for pixel intensity and network output', fontsize=15)
   plt.colorbar()
   plt.savefig(save_dir + 'NNs/' + name + '_pearson_nn.png')
+  plt.savefig(save_dir + 'NNs/' + name + '_pearson_nn.pdf')
   if show:
     plt.show()
   
@@ -82,6 +84,7 @@ def plot_pearson(run_dir, save_dir, name, show=False, only_true=False, show_obs=
   plt.title('Difference between net and true PCCs', fontsize=15)
   plt.colorbar()
   plt.savefig(save_dir + 'diffs/' + name + '_pearson_diff.png')
+  plt.savefig(save_dir + 'diffs/' + name + '_pearson_diff.pdf')
   if show:
     plt.show()
 

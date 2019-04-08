@@ -61,16 +61,10 @@ def u_tri(using_charged, combine):
     comb_im.save(path)
 
 def c_path(path_f, sig, bg, charged = False):
-    if charged:
-        if os.path.isfile(path_f(sig, bg + ' charged')):
-            return path_f(sig, bg + ' charged')
-        else:
-            return path_f(bg, sig + ' charged')
+    if os.path.isfile(path_f(sig, bg)):
+        return path_f(sig, bg)
     else:
-        if os.path.isfile(path_f(sig, bg)):
-            return path_f(sig, bg)
-        else:
-            return path_f(bg, sig)
+        return path_f(bg, sig)
 
 def pcc_path(sig, bg):
     return 'final_curves/pearsons/truths/' + sig + ' vs ' + bg + '_pearson_truth.png'

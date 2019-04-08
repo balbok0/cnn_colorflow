@@ -72,7 +72,8 @@ def plot_roc(title, fname, X_test, y_test, model, show=False, use2 = False, X_te
   plt.xlabel('false positive rate', fontsize=15)
   plt.ylabel('true positive rate', fontsize=15)
   plt.title(title, fontsize=19)
-  plt.savefig(fname)
+  plt.savefig(fname+'.png')
+  plt.savefig(fname+'.pdf')
   if show:
     plt.show()
 
@@ -99,7 +100,8 @@ def plot_sic(title, fname, X_test, y_test, model, show=False, use2 = False, X_te
   plt.xlabel('true positive rate', fontsize=15)
   plt.ylabel('tpr/sqrt(fpr)', fontsize=15)
   plt.title(title, fontsize=19)
-  plt.savefig(fname)
+  plt.savefig(fname+'.png')
+  plt.savefig(fname+'.pdf')
   if show:
     plt.show()
 
