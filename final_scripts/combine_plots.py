@@ -67,11 +67,11 @@ def c_path(path_f, sig, bg, charged = False):
         return path_f(bg, sig)
 
 def pcc_path(sig, bg):
-    return 'final_curves/pearsons/truths/' + sig + ' vs ' + bg + '_pearson_truth.png'
+    return 'final_curves/pearsons/truths/' + sig + '_vs_' + bg + '_pearson_truth.png'
 def sic_path(sig, bg):
-    return 'final_curves/sic_' + sig + ' vs ' + bg + '.png'
+    return 'final_curves/sic_' + sig + '_vs_' + bg + '.png'
 def roc_path(sig, bg):
-    return 'final_curves/roc_' + sig + ' vs ' + bg + '.png'
+    return 'final_curves/roc_' + sig + '_vs_' + bg + '.png'
 def img_path(sig):
     return 'final_curves/Average_' + sig + '.png'
 

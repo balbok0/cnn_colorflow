@@ -158,7 +158,7 @@ def get_train_test(n=-1, delta_R_min=float("-inf"), delta_R_max=float("inf"),  w
   X = np.concatenate((bg_pixels, sig_pixels), axis=0)
   y = np.concatenate((bg_y, sig_y), axis=0)
   
-  X_train, X_test, y_train, y_test, weights_train, weights_test = train_test_split(X, y, weights, train_size=train_size)
+  X_train, X_test, y_train, y_test, weights_train, weights_test = train_test_split(X, y, weights, train_size=train_size, random_state = np.random.RandomState(seed=100))
 
   del sig_y
   del bg_y

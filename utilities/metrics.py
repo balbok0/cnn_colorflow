@@ -47,7 +47,44 @@ def n_pass_hyp(X_test, y_test, model, flip=0, verbose=0):
     Ns[i] = N
   return math.ceil(min(Ns))
 
-def plot_roc(title, fname, X_test, y_test, model, show=False, use2 = False, X_test2 = None, model2 = None):
+def plot_n_roc_sic(title, fname, X_tests, y_tests, models, model_types, labels, SIC, show=False):
+  plt.clf()
+  colors = ['b', 'g', 'c', 'm', 'y', 'k']
+  ax = plt.gca()
+  plt.plot([0,1], [0,1], 'r--')
+
+  for i in range(len(model_types)):
+    if model_types[i] == True:
+      y_score = models[i].predict(X_tests[i])
+    else:
+      y_score = models[i].predict_proba(X_tests[i])
+      y_score = y_score[:, 1]
+
+    fpr, tpr, _ = roc_curve(y_tests[i], y_score)
+    if SIC:
+      sic = np.divide(tpr, np.sqrt(fpr), out=np.zeros_like(tpr), where=np.sqrt(fpr)!=0)
+      plt.plot(tpr, sic, lw=2, drawstyle='steps-post', color=colors[i % len(colors)])
+      plt.text(0.4, 0.1*i, "Max SIC " + labels[i] + " = {:.3}".format(np.max(sic)), fontsize=17, weight=550)
+    else:
+      AUC = auc(fpr, tpr)
+      ax.plot(fpr, tpr, lw=2, drawstyle='steps-post', color=colors[i % len(colors)])
+      plt.text(0.4, 0.1*i, "AUC " + labels[i] + " = {:.3}".format(AUC), fontsize=17, weight=550)
+
+  if SIC:
+    plt.xlabel('true positive rate', fontsize=15)
+    plt.ylabel('tpr/sqrt(fpr)', fontsize=15)
+  else:
+    plt.xlim([0, 1])
+    plt.ylim([0, 1.05])
+    plt.xlabel('false positive rate', fontsize=15)
+    plt.ylabel('true positive rate', fontsize=15)
+  plt.title(title, fontsize=19)
+  plt.savefig(fname+'.png')
+  plt.savefig(fname+'.pdf')
+  if show:
+    plt.show()
+
+def plot_roc(title, fname, X_test, y_test, model, show=False):
   plt.clf()
 
   y_score = model.predict(X_test)
@@ -55,17 +92,8 @@ def plot_roc(title, fname, X_test, y_test, model, show=False, use2 = False, X_te
   AUC = auc(fpr, tpr)
   plt.plot(fpr, tpr, lw=2, drawstyle='steps-post', color='blue')
 
-  if use2:
-    y_score2 = model2.predict_proba(X_test2)
-    y_score2 = y_score2[:, 1]
-    fpr2, tpr2, _ = roc_curve(y_test, y_score2)
-    AUC2 = auc(fpr2, tpr2)
-    plt.plot(fpr2, tpr2, lw=2, drawstyle='steps-post', color='green')
-
   plt.plot([0,1], [0,1], 'r--')
   plt.text(0.4, 0.2, "AUC Net = {:.3}".format(AUC), fontsize=17, weight=550)
-  if use2:
-    plt.text(0.4, 0.1, "AUC Obs = {:.3}".format(AUC2), fontsize=17, weight=550)
 
   plt.xlim([0, 1])
   plt.ylim([0, 1.05])
@@ -77,7 +105,8 @@ def plot_roc(title, fname, X_test, y_test, model, show=False, use2 = False, X_te
   if show:
     plt.show()
 
-def plot_sic(title, fname, X_test, y_test, model, show=False, use2 = False, X_test2 = None, model2 = None):
+
+def plot_sic(title, fname, X_test, y_test, model, show=False):
   plt.clf()
 
   y_score = model.predict(X_test)
@@ -85,18 +114,7 @@ def plot_sic(title, fname, X_test, y_test, model, show=False, use2 = False, X_te
   sic = np.divide(tpr, np.sqrt(fpr), out=np.zeros_like(tpr), where=np.sqrt(fpr)!=0)
   plt.plot(tpr, sic, lw=2, drawstyle='steps-post', color='red')
 
-  
-  if use2:
-    y_score2 = model2.predict_proba(X_test2)
-    y_score2 = y_score2[:, 1]
-    fpr2, tpr2, _ = roc_curve(y_test, y_score2)
-    sic2 = np.divide(tpr2, np.sqrt(fpr2), out=np.zeros_like(tpr2), where=np.sqrt(fpr2)!=0)
-    plt.plot(tpr2, sic2, lw=2, drawstyle='steps-post', color='green')
-
-
   plt.text(0.4, 0.2, "Max SIC Net = {:.3}".format(np.max(sic)), fontsize=17, weight=550)
-  if use2:
-    plt.text(0.4, 0.1, "Max SIC Obs = {:.3}".format(np.max(sic2)), fontsize=17, weight=550)
   plt.xlabel('true positive rate', fontsize=15)
   plt.ylabel('tpr/sqrt(fpr)', fontsize=15)
   plt.title(title, fontsize=19)
