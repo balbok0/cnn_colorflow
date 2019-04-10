@@ -43,8 +43,8 @@ def comp_all(i, datasets = datasets_s, n = 150000):
         model_types.append(True)
         labels.append(model_name)
         
-    plot_n_roc_sic(name, 'final_curves/sic_'+name, X_tests, y_yests, models, model_types, labels, True)
-    plot_n_roc_sic(name, 'final_curves/roc_'+name, X_tests, y_yests, models, model_types, labels, False)
+    plot_n_roc_sic(name, 'final_curves/sic_'+name, X_tests, y_yests, models, model_types, labels, True, fontfac=0.5)
+    plot_n_roc_sic(name, 'final_curves/roc_'+name, X_tests, y_yests, models, model_types, labels, False, fontfac=0.5)
 
 if __name__ == '__main__':
   for i in range(len(datasets_s)):
