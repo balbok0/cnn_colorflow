@@ -93,7 +93,7 @@ def pipeline(datasets, ischarged, usePrev = True, n = 150000):
 
             X_train, X_test, y_train, y_test, \
             weights_train, weights_test, sig_metadata, \
-            bg_metadata, _ = get_train_test(n=n)
+            bg_metadata = get_train_test(n=n)
 
             model = train(X_train, X_test, y_train, \
                 y_test, weights_train, model_name, usePrev=usePrev)

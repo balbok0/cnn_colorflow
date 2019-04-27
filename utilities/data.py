@@ -3,6 +3,7 @@ import numpy as np
 import h5py
 import pandas as pd
 from sklearn.model_selection import train_test_split
+from sklearn.utils import shuffle
 import gc
 
 import constants
@@ -155,24 +156,36 @@ def get_train_test(n=-1, delta_R_min=float("-inf"), delta_R_max=float("inf"),  w
   sig_pixels = sig_pixels.reshape(sig_pixels.shape[0], sig_pixels.shape[1], sig_pixels.shape[2], 1)
   bg_y = np.zeros(bg_pixels.shape[0])
   sig_y = np.ones(sig_pixels.shape[0])
-  X = np.concatenate((bg_pixels, sig_pixels), axis=0)
-  y = np.concatenate((bg_y, sig_y), axis=0)
   
-  X_train, X_test, y_train, y_test, weights_train, weights_test = train_test_split(X, y, weights, train_size=train_size, random_state = np.random.RandomState(seed=100))
+  bg_X_train, bg_X_test, sig_X_train, sig_X_test, \
+    bg_y_train, bg_y_test, sig_y_train, sig_y_test, \
+      bg_weights_train, bg_weights_test, sig_weights_train, sig_weights_test = \
+        train_test_split(bg_pixels, sig_pixels, bg_y, sig_y, bg_weights, sig_weights, train_size=train_size, shuffle=False)
+
+  X_train = np.concatenate((bg_X_train, sig_X_train), axis=0)
+  X_test = np.concatenate((bg_X_test, sig_X_test), axis=0)
+  y_train = np.concatenate((bg_y_train, sig_y_train), axis=0)
+  y_test = np.concatenate((bg_y_test, sig_y_test), axis=0)
+  weights_train = np.concatenate((bg_weights_train, sig_weights_train), axis=0)
+  weights_test = np.concatenate((bg_weights_test, sig_weights_test), axis=0)
+
+  X_train, y_train, weights_train = \
+    shuffle(X_train, y_train, weights_train, random_state = np.random.RandomState(seed=100))
+  X_test, y_test, weights_test = \
+    shuffle(X_test, y_test, weights_test, random_state = np.random.RandomState(seed=100))
 
   del sig_y
   del bg_y
   del bg_pixels
   del sig_pixels
-  del X
   gc.collect() # clean up memory
 
   X_train, X_test = preprocess(X_train, X_test)
 
-  return [X_train, X_test, y_train, y_test, weights_train, weights_test, sig_metadata, bg_metadata, y]
+  return [X_train, X_test, y_train, y_test, weights_train, weights_test, sig_metadata, bg_metadata]
 
 def main():
-  X_train, X_test, y_train, y_test, weights_train, weights_test = get_train_test()
+  X_train, X_test, y_train, y_test, weights_train, weights_test , _, _ = get_train_test()
 
 if __name__ == '__main__':
   main()
