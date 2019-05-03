@@ -136,6 +136,19 @@ def pipeline(datasets, ischarged, usePrev = True, n = 150000):
             n_hyp_tbl[i, j] = n_pass_hyp(X_test[:1000, ...], y_test[:1000], model, flip=0)
             n_hyp_tbl[j, i] = n_pass_hyp(X_test[:1000, ...], y_test[:1000], model, flip=1)
 
+            # save all y's
+            np.save('y_vals/y_nn_test_'+model_name, y_test)
+            y_hat = model.predict(X_test)
+            np.save('y_vals/y_nn_hat_'+model_name, y_hat)
+
+            np.save('y_vals/y_obs_test_'+model_name, y_test)
+            obs_hat = obs_model.predict_proba(obs_test)
+            np.save('y_vals/y_obs_hat_'+model_name, obs_hat[:, 1])
+            
+            np.save('y_vals/y_pull_test_'+model_name, y_test_pull)
+            pull_hat = pull_model.predict_proba(pull_test)
+            np.save('y_vals/y_pull_hat_'+model_name, pull_hat[:, 1])
+
     print(n_hyp_tbl)
 
 def main(combine = False, n = 150000):
