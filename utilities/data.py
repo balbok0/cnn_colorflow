@@ -80,7 +80,7 @@ def get_pixels_metadata(bg=False, n=-1, delta_R_min=float('-inf'), delta_R_max=f
 
   return pixels[:n], metadata[:n]
 
-def preprocess(x_train, x_test):
+def preprocess(x_train, x_test, no_train=False):
     def safeNorm(arr, ord): #implement own norm, this one sucks
         def shape(arr):
             return arr.reshape(arr.shape[0], arr.shape[1] * arr.shape[2] * arr.shape[3])
@@ -104,11 +104,15 @@ def preprocess(x_train, x_test):
         arr[arr<eps] = eps
         return 1+arr/6 #put back into reasonable range
 
-    x_train = safeLog(x_train)
-    x_test = safeLog(x_test)
-    norm = safeNorm(x_train, 1)
-    np.divide(x_train, norm, out=x_train)
-    np.divide(x_test, norm, out=x_test)
+    if not no_train:
+      x_train = safeLog(x_train)
+      x_test = safeLog(x_test)
+      norm = safeNorm(x_train, 1)
+      np.divide(x_train, norm, out=x_train)
+      np.divide(x_test, norm, out=x_test)
+    else:
+      x_test = safeLog(x_test)
+      np.divide(x_test, safeNorm(x_test, 1), out=x_test)
 
     return x_train, x_test
 
@@ -180,7 +184,7 @@ def get_train_test(n=-1, delta_R_min=float("-inf"), delta_R_max=float("inf"),  w
   del sig_pixels
   gc.collect() # clean up memory
 
-  X_train, X_test = preprocess(X_train, X_test)
+  X_train, X_test = preprocess(X_train, X_test, no_train=(train_size==0))
 
   return [X_train, X_test, y_train, y_test, weights_train, weights_test, sig_metadata, bg_metadata]
 

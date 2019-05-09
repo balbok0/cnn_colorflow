@@ -126,12 +126,12 @@ def pipeline(datasets, ischarged, usePrev = True, n = 150000):
             pull_model = adaboost(pull_train, y_train_pull)
             
             X_tests = [X_test, obs_test, pull_test]
-            y_yests = [y_test, y_test, y_test_pull]
+            y_tests = [y_test, y_test, y_test_pull]
             models = [model, obs_model, pull_model]
             model_types = [True, False, False]
             labels = ['CNN', 'OBS', 'Pull']
-            plot_n_roc_sic(model_name, 'final_curves/sic_'+model_name, X_tests, y_yests, models, model_types, labels, True)
-            plot_n_roc_sic(model_name, 'final_curves/roc_'+model_name, X_tests, y_yests, models, model_types, labels, False)
+            plot_n_roc_sic(model_name, 'final_curves/sic_'+model_name, X_tests, y_tests, models, model_types, labels, True)
+            plot_n_roc_sic(model_name, 'final_curves/roc_'+model_name, X_tests, y_tests, models, model_types, labels, False)
 
             n_hyp_tbl[i, j] = n_pass_hyp(X_test[:1000, ...], y_test[:1000], model, flip=0)
             n_hyp_tbl[j, i] = n_pass_hyp(X_test[:1000, ...], y_test[:1000], model, flip=1)

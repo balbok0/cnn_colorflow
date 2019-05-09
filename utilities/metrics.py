@@ -50,7 +50,6 @@ def n_pass_hyp(X_test, y_test, model, flip=0, verbose=0):
 def plot_n_roc_sic(title, fname, X_tests, y_tests, models, model_types, labels, SIC, show=False, fontfac=1):
   plt.clf()
   colors = ['b', 'g', 'c', 'm', 'y', 'k']
-  ax = plt.gca()
   plt.plot([0,1], [0,1], 'r--')
 
   for i in range(len(model_types)):
@@ -68,11 +67,9 @@ def plot_n_roc_sic(title, fname, X_tests, y_tests, models, model_types, labels, 
 
     if SIC:
       sic = np.divide(tpr, np.sqrt(fpr), out=np.zeros_like(tpr), where=np.sqrt(fpr)!=0)
-      plt.plot(tpr, sic, lw=2, drawstyle='steps-post', color=colors[i % len(colors)])
-      plt.text(0.4, fontfac*0.1*i+(1-fontfac)*0.1, "Max SIC " + labels[i] + " = {:.3}".format(np.max(sic)), fontsize=17*fontfac, weight=550)
+      plt.plot(tpr, sic, lw=2, drawstyle='steps-post', color=colors[i % len(colors)], label=labels[i] + ", Max = {:.3}".format(np.max(sic)))
     else:
-      ax.plot(fpr, tpr, lw=2, drawstyle='steps-post', color=colors[i % len(colors)])
-      plt.text(0.4, fontfac*0.1*i+(1-fontfac)*0.1, "AUC " + labels[i] + " = {:.3}".format(AUC), fontsize=17*fontfac, weight=550)
+      plt.plot(fpr, tpr, lw=2, drawstyle='steps-post', color=colors[i % len(colors)], label=labels[i] + ", AUC = {:.3}".format(AUC))
 
   if SIC:
     plt.xlabel('true positive rate', fontsize=15)
@@ -83,6 +80,7 @@ def plot_n_roc_sic(title, fname, X_tests, y_tests, models, model_types, labels, 
     plt.xlabel('false positive rate', fontsize=15)
     plt.ylabel('true positive rate', fontsize=15)
   plt.title(title, fontsize=19)
+  plt.legend()
   plt.savefig(fname+'.png')
   plt.savefig(fname+'.pdf')
   if show:
