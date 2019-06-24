@@ -17,6 +17,15 @@ from Pearson import plot_pearson
 from metrics import plot_n_roc_sic, n_pass_hyp
 from combine_plots import cp_main
 
+def setConstants(sig, bg):
+    constants.SIG_H5 = os.path.join(constants.DATA_DIR, sig + '.h5')
+    constants.BG_H5 = os.path.join(constants.DATA_DIR, bg + '.h5')
+
+    model_name = sig + '_vs_' + bg
+    constants.MODEL_NAME= model_name + '_model'
+
+    return model_name
+
 def train(X_train, X_test, y_train, \
                 y_test, weights_train, name, usePrev=True):
     if usePrev and os.path.isfile('../best_model/' + name + '_model'):
@@ -38,21 +47,26 @@ def makeImage(arr, title):
     plt.savefig('final_curves/'+title+'.png')
     plt.savefig('final_curves/'+title+'.pdf')
 
-def calcObs(X):
+def calcObs(X, num=10):
     n = X.shape[0]
-    obs = np.zeros((n, 4))
-    for i in range(constants.DATA_SIZE):
-        for j in range(constants.DATA_SIZE):
-            if i == 32 and j == 32:
-                obs[:, 0] = X[:, i, j, 0]
-            elif pow(i-32, 2) + pow(j-32, 2) < 36:
-                obs[:, 1] = obs[:, 1] + X[:, i, j, 0]
-            elif pow(i-32, 2) + pow(j-43, 2) < 25:
-                obs[:, 2] = obs[:, 2] + X[:, i, j, 0]
-            elif pow(i-32, 2.0)/pow(5.0, 2.0) + pow(j-53, 2.0)/pow(12.0, 2.0) < 1.0:
-                obs[:, 3] = obs[:, 3] + X[:, i, j, 0]
+    radiuses = np.linspace(1, constants.DATA_SIZE, num=num)
 
+    def isInTelescope(i, j, r):
+        dist = (i-32)**2 + (j-32)**2
+        if r > 1:
+            rad_prev = radiuses[r-1]
+        else:
+            rad_prev = 0
+        return ((dist <= radiuses[r]**2) and (dist > rad_prev**2))
+    
+    obs = np.zeros((n, num))
+    for r in range(num):
+        for i in range(constants.DATA_SIZE):
+            for j in range(constants.DATA_SIZE):
+                if isInTelescope(i, j, r):
+                    obs[:, r] = obs[:, r] + X[:, i, j, 0]
     return obs
+
 
 def adaboost(X, y):
     bdt = AdaBoostClassifier(DecisionTreeClassifier(max_depth=3),
@@ -85,12 +99,7 @@ def pipeline(datasets, ischarged, usePrev = True, n = 150000):
             sig = datasets[i]
             bg = datasets[j]
 
-            constants.SIG_H5 = os.path.join(constants.DATA_DIR, sig + '.h5')
-            constants.BG_H5 = os.path.join(constants.DATA_DIR, bg + '.h5')
-
-            model_name = sig + '_vs_' + bg
-            constants.MODEL_NAME= model_name + '_model'
-
+            model_name = setConstants(sig, bg)
             X_train, X_test, y_train, y_test, \
             weights_train, weights_test, sig_metadata, \
             bg_metadata = get_train_test(n=n)
