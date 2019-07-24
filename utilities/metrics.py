@@ -47,6 +47,10 @@ def n_pass_hyp(X_test, y_test, model, flip=0, verbose=0):
     Ns[i] = N
   return math.ceil(min(Ns))
 
+def plot_n_roc_and_sic(title, fname, X_tests, y_tests, models, model_types, labels, show=False, fontfac=1):
+  plot_n_roc_sic(title, fname + '_sic', X_tests, y_tests, models, model_types, labels, True)
+  plot_n_roc_sic(title, fname + '_roc', X_tests, y_tests, models, model_types, labels, False)
+
 def plot_n_roc_sic(title, fname, X_tests, y_tests, models, model_types, labels, SIC, show=False, fontfac=1):
   plt.clf()
   colors = ['b', 'g', 'c', 'm', 'y', 'k']

@@ -8,11 +8,11 @@ import gc
 
 import constants
 
-def get_pixels_metadata(bg=False, n=-1, delta_R_min=float('-inf'), delta_R_max=float('inf'), recalculate=False, same_file=False):
+def get_pixels_metadata(bg=False, n=-1, delta_R_min=float('-inf'), delta_R_max=float('inf'), same_file=False):
   """Return pixel data and metadata for either the octets or singlets.
 
   Return:
-  pixels -- a (n, 625) numpy array of the pixel data.
+  pixels -- a (n, jet image width^2) numpy array of the pixel data.
   metadata -- a (n, 4) pandas dataframe containing all other data, such as
               mass, jet pull, and delta R.
 
@@ -22,9 +22,7 @@ def get_pixels_metadata(bg=False, n=-1, delta_R_min=float('-inf'), delta_R_max=f
   delta_R_min -- the minimum delta R allowed for a sample to be included.
   delta_R_max -- the maximum delta R allowed for a sample to be included.
   
-  Recalulates from the original text files if necessary or if recalculate is
-  true.
-  The pixel data is a (n, 625) numpy array.
+  The pixel data is a (n, jet image width^2) numpy array.
   The metadata is a (n, 4) pandas array.
   """
 
@@ -33,18 +31,9 @@ def get_pixels_metadata(bg=False, n=-1, delta_R_min=float('-inf'), delta_R_max=f
     h5file = constants.BG_H5
   else:
     h5file = constants.SIG_H5
-  # Get the appropriate numpy array, either from a saved .npy file or
-  # from the original .txt file.
-  if recalculate:
-    # Remove any row with a nan value.
-    if (np.isnan(data).any()):
-      print("[data] Warning: non-numeric values encountered, removing affected samples.")
-      data = data[~np.isnan(data).any(axis=1)]
-    with open(npyfile, 'wb+') as npyfile_handle:
-      np.save(npyfile_handle, data)
-  else:
-    print("[data] Loading from {} ...".format(h5file))
-    data = h5py.File(h5file, 'r')
+
+  print("[data] Loading from {} ...".format(h5file))
+  data = h5py.File(h5file, 'r')
 
   sig_cutoff = int(np.sum(data['meta_variables/signal'][()]))
   size = data['meta_variables/pull1'][()].shape[0]
@@ -145,8 +134,8 @@ def get_train_test(n=-1, delta_R_min=float("-inf"), delta_R_max=float("inf"),  w
     mass_num_bins = 100
     mass_bins = np.linspace(mass_min, mass_max, mass_num_bins)
     for i in range(1, mass_num_bins):
-      bg_bin = (bg_metadata['delta_R'] < mass_bins[i]) & (bg_metadata['delta_R'] >= mass_bins[i-1])
-      sig_bin = (sig_metadata['delta_R'] < mass_bins[i]) & (sig_metadata['delta_R'] >= mass_bins[i-1])
+      bg_bin = (bg_metadata['mass'] < mass_bins[i]) & (bg_metadata['mass'] >= mass_bins[i-1])
+      sig_bin = (sig_metadata['mass'] < mass_bins[i]) & (sig_metadata['mass'] >= mass_bins[i-1])
       bg_count = np.sum(bg_bin)
       sig_count = np.sum(sig_bin)
       if sig_count == 0:

@@ -91,8 +91,8 @@ def hist(x, title, log = False):
 
 def pipeline(datasets, ischarged, usePrev = True, n = 150000):
     n_hyp_tbl = np.zeros((len(datasets), len(datasets))) - 1
-    for i in range(6):
-        for j in range(6):
+    for i in range(len(datasets)):
+        for j in range(len(datasets)):
             if j >= i:
                 continue
 
@@ -119,7 +119,11 @@ def pipeline(datasets, ischarged, usePrev = True, n = 150000):
             name = model_name + '_'
             hist([sig_metadata.iloc[:, 0], bg_metadata.iloc[:, 0]], name+'pull1')
             hist([sig_metadata.iloc[:, 1], bg_metadata.iloc[:, 1]], name+'pull2')
-            hist([sig_obs[:, 0], bg_obs[:, 0]], name+'obs1')
+            for k in range(10):
+                hist([sig_obs[:, k], bg_obs[:, k]], name+'obs'+str(k+1))
+                np.save('final_curves/tjets/' + sig + '_obs' + str(k+1), sig_obs[:, k])
+                np.save('final_curves/tjets/' + bg + '_obs' + str(k+1), bg_obs[:, k])
+
             hist([sig_obs[:, 1], bg_obs[:, 1]], name+'obs2')
             hist([sig_obs[:, 2], bg_obs[:, 2]], name+'obs3', log=True)
             hist([sig_obs[:, 3], bg_obs[:, 3]], name+'obs4', log=True)
@@ -161,10 +165,11 @@ def pipeline(datasets, ischarged, usePrev = True, n = 150000):
     print(n_hyp_tbl)
 
 def main(combine = False, n = 150000):
-    datasets_c = ['h_qq_rot_charged', 'h_gg_rot_charged', 'cp_qq_rot_charged', 'qx_qg_rot_charged', 's8_gg_rot_charged', 'zp_qq_rot_charged']
+    #datasets_c = ['h_qq_rot_charged', 'h_gg_rot_charged', 'cp_qq_rot_charged', 'qx_qg_rot_charged', 's8_gg_rot_charged', 'zp_qq_rot_charged']
+    datasets_c = ['s8_gg_rot_charged', 'zp_qq_rot_charged']
     datasets_s = ['h_qq', 'h_gg', 'cp_qq', 'qx_qg', 's8_gg', 'zp_qq']
 
-    pipeline(datasets_s, False, n=n)
+    #pipeline(datasets_s, False, n=n)
     pipeline(datasets_c, True, n=n)
         
     if combine:

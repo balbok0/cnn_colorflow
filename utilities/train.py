@@ -86,7 +86,7 @@ def main():
   if not args.run_dir:
     args.run_dir = utils.make_run_dir()
     print('[test] New run directory created at {}'.format(args.run_dir))
-  X_train, X_test, y_train, y_test, weights_train, _ = data.get_train_test()
+  X_train, X_test, y_train, y_test, weights_train, _, _, _= data.get_train_test()
   test_dir = os.path.join(args.run_dir, constants.TEST_DIR)
   try:
     os.makedirs(test_dir)

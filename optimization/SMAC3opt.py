@@ -21,7 +21,10 @@ from smac.scenario.scenario import Scenario
 from smac.facade.smac_facade import SMAC
 
 import data
-X_train, X_test, y_train, y_test, weights_train, _ = data.get_train_test(n=500000)
+n=500000
+X_train, X_test, y_train, y_test, weights_train, _ = data.get_train_test(n=n)
+X_val = X_train[:int(n*0.2)]
+y_val = y_train[:int(n*0.2)]
 
 def print_incumb(cfg):
     print('Best model saved in: ' + '../../models/' \
@@ -87,7 +90,7 @@ def cnn_from_cfg(cfg):
         verbose=2, save_best_only=True)],
       sample_weight=weights_train)
 
-  return model.evaluate(X_test, y_test)[0]
+  return model.evaluate(X_val, y_val)[0]
 
 cs = ConfigurationSpace()
 
