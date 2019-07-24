@@ -165,11 +165,10 @@ def pipeline(datasets, ischarged, usePrev = True, n = 150000):
     print(n_hyp_tbl)
 
 def main(combine = False, n = 150000):
-    #datasets_c = ['h_qq_rot_charged', 'h_gg_rot_charged', 'cp_qq_rot_charged', 'qx_qg_rot_charged', 's8_gg_rot_charged', 'zp_qq_rot_charged']
-    datasets_c = ['s8_gg_rot_charged', 'zp_qq_rot_charged']
+    datasets_c = ['h_qq_rot_charged', 'h_gg_rot_charged', 'cp_qq_rot_charged', 'qx_qg_rot_charged', 's8_gg_rot_charged', 'zp_qq_rot_charged']
     datasets_s = ['h_qq', 'h_gg', 'cp_qq', 'qx_qg', 's8_gg', 'zp_qq']
 
-    #pipeline(datasets_s, False, n=n)
+    pipeline(datasets_s, False, n=n)
     pipeline(datasets_c, True, n=n)
         
     if combine:
