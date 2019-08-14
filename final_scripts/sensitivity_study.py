@@ -33,6 +33,7 @@ def sen_stud(datasets, ischarged):
             else:
                 model_name = sig + '_rot_charged_vs_' + bg + '_rot_charged'
             constants.MODEL_NAME= model_name + '_model'
+            model = load_model('../best_model/' + model_name + '_model')
 
             _, X_test_14, _, y_test_14, \
             _, _, _, _ = get_train_test(n=150000)
@@ -42,25 +43,36 @@ def sen_stud(datasets, ischarged):
                 constants.BG_H5 = os.path.join(constants.DATA_DIR, 'sensitivity_study/' + bg + '_col_1_' + charge + '.h5')
                 _, X_test_1, _, y_test_1, \
                 _, _, _, _ = get_train_test(n=30000, train_size=0)
+                np.save('final_curves/sensitivity_study/yvals/true_'+ sig + '_vs_' + bg + '_col_1_' + charge, y_test_1)
+                np.save('final_curves/sensitivity_study/yvals/hat_'+ sig + '_vs_' + bg + '_col_1_' + charge, model.predict(X_test_1))
 
             constants.SIG_H5 = os.path.join(constants.DATA_DIR, 'sensitivity_study/' + sig + '_col_2_' + charge + '.h5')
             constants.BG_H5 = os.path.join(constants.DATA_DIR, 'sensitivity_study/' + bg + '_col_2_' + charge + '.h5')
             _, X_test_2, _, y_test_2, \
             _, _, _, _ = get_train_test(n=30000, train_size=0)
+            np.save('final_curves/sensitivity_study/yvals/true_'+ sig + '_vs_' + bg + '_col_2_' + charge, y_test_2)
+            np.save('final_curves/sensitivity_study/yvals/hat_'+ sig + '_vs_' + bg + '_col_2_' + charge, model.predict(X_test_2))
+
             constants.SIG_H5 = os.path.join(constants.DATA_DIR, 'sensitivity_study/' + sig + '_pp_21_' + charge + '.h5')
             constants.BG_H5 = os.path.join(constants.DATA_DIR, 'sensitivity_study/' + bg + '_pp_21_' + charge + '.h5')
             _, X_test_21, _, y_test_21, \
             _, _, _, _ = get_train_test(n=30000, train_size=0)
+            np.save('final_curves/sensitivity_study/yvals/true_'+ sig + '_vs_' + bg + '_pp_21_' + charge, y_test_21)
+            np.save('final_curves/sensitivity_study/yvals/hat_'+ sig + '_vs_' + bg + '_pp_21_' + charge, model.predict(X_test_21))
+
             constants.SIG_H5 = os.path.join(constants.DATA_DIR, 'sensitivity_study/' + sig + '_pp_25_' + charge + '.h5')
             constants.BG_H5 = os.path.join(constants.DATA_DIR, 'sensitivity_study/' + bg + '_pp_25_' + charge + '.h5')
             _, X_test_25, _, y_test_25, \
             _, _, _, _ = get_train_test(n=30000, train_size=0)
+            np.save('final_curves/sensitivity_study/yvals/true_'+ sig + '_vs_' + bg + '_pp_25_' + charge, y_test_25)
+            np.save('final_curves/sensitivity_study/yvals/hat_'+ sig + '_vs_' + bg + '_pp_25_' + charge, model.predict(X_test_25))
+
             constants.SIG_H5 = os.path.join(constants.DATA_DIR, 'sensitivity_study/' + sig + '_pp_26_' + charge + '.h5')
             constants.BG_H5 = os.path.join(constants.DATA_DIR, 'sensitivity_study/' + bg + '_pp_26_' + charge + '.h5')
             _, X_test_26, _, y_test_26, \
             _, _, _, _ = get_train_test(n=30000, train_size=0)
-
-            model = load_model('../best_model/' + model_name + '_model')
+            np.save('final_curves/sensitivity_study/yvals/true_'+ sig + '_vs_' + bg + '_pp_26_' + charge, y_test_26)
+            np.save('final_curves/sensitivity_study/yvals/hat_'+ sig + '_vs_' + bg + '_pp_26_' + charge, model.predict(X_test_26))
 
             if not "qx_qg" in model_name:
                 X_tests = [X_test_1, X_test_2, X_test_14, X_test_21, X_test_25, X_test_26]
