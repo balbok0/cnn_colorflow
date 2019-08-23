@@ -89,7 +89,7 @@ def hist(x, title, log = False):
     plt.savefig('final_curves/hists/'+title+'.pdf')
     plt.close(fig)
 
-def pipeline(datasets, ischarged, usePrev = True, n = 150000):
+def pipeline(datasets, ischarged, usePrev = True, skip = False, n = 150000):
     n_hyp_tbl = np.zeros((len(datasets), len(datasets))) - 1
     for i in range(len(datasets)):
         for j in range(len(datasets)):
@@ -100,6 +100,14 @@ def pipeline(datasets, ischarged, usePrev = True, n = 150000):
             bg = datasets[j]
 
             model_name = setConstants(sig, bg)
+
+            if skip \
+               and os.path.exists('y_vals/y_pull_hat_'+model_name+'.npy') \
+               and os.path.exists('final_curves/pearsons/truths/'+model_name+'_pearson_truth.png.npy'):
+                print('Skipped!')
+                continue
+
+
             X_train, X_test, y_train, y_test, \
             weights_train, weights_test, sig_metadata, \
             bg_metadata = get_train_test(n=n)
@@ -168,8 +176,8 @@ def main(combine = False, n = 150000):
     datasets_c = ['h_qq_rot_charged', 'h_gg_rot_charged', 'cp_qq_rot_charged', 'qx_qg_rot_charged', 's8_gg_rot_charged', 'zp_qq_rot_charged',  'six_jj_rot_charged', 'x2_jj_rot_charged']
     datasets_s = ['h_qq', 'h_gg', 'cp_qq', 'qx_qg', 's8_gg', 'zp_qq', 'six_jj', 'x2_jj']
 
-    pipeline(datasets_s, False, n=n)
-    pipeline(datasets_c, True, n=n)
+    pipeline(datasets_s, False, n=n, skip=True)
+    pipeline(datasets_c, True, n=n, skip=True)
         
     if combine:
         cp_main()
