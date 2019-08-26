@@ -103,8 +103,9 @@ def pipeline(datasets, ischarged, usePrev = True, skip = False, n = 150000):
 
             if skip \
                and os.path.exists('y_vals/y_pull_hat_'+model_name+'.npy') \
-               and os.path.exists('final_curves/pearsons/truths/'+model_name+'_pearson_truth.png.npy'):
-                print('Skipped!')
+               and os.path.exists('final_curves/pearsons/truths/'+model_name+'_pearson_truth.png.npy') \
+               and os.path.exists('../best_model/' + sig + '_vs_' + bg + '_model'):
+                print('Skipped '  + sig + ' vs ' + bg + '!')
                 continue
 
 
@@ -177,7 +178,7 @@ def main(combine = False, n = 150000):
     datasets_s = ['h_qq', 'h_gg', 'cp_qq', 'qx_qg', 's8_gg', 'zp_qq', 'six_jj', 'x2_jj']
 
     pipeline(datasets_s, False, n=n, skip=True)
-    pipeline(datasets_c, True, n=n, skip=True)
+    #pipeline(datasets_c, True, n=n, skip=True)
         
     if combine:
         cp_main()
