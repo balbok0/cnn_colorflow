@@ -28,12 +28,11 @@ def setConstants(sig, bg):
 
 def train(X_train, X_test, y_train, \
                 y_test, weights_train, name, usePrev=True):
-    if usePrev and os.path.isfile('../best_model/' + name + '_model'):
-        from keras.models import load_model
-        model = load_model('../best_model/' + name + '_model')
-    else:
-        model = train_model(X_train, X_test, y_train, \
+    from keras.models import load_model
+    if (not usePrev) or not os.path.isfile('../best_model/' + name + '_model'):
+        train_model(X_train, X_test, y_train, \
                 y_test, weights_train, '../best_model', epochs=200)
+    model = load_model('../best_model/' + name + '_model')
 
     return model
 
@@ -177,8 +176,8 @@ def main(combine = False, n = 150000):
     datasets_c = ['h_qq_rot_charged', 'h_gg_rot_charged', 'cp_qq_rot_charged', 'qx_qg_rot_charged', 's8_gg_rot_charged', 'zp_qq_rot_charged',  'six_jj_rot_charged', 'x2_jj_rot_charged']
     datasets_s = ['h_qq', 'h_gg', 'cp_qq', 'qx_qg', 's8_gg', 'zp_qq', 'six_jj', 'x2_jj']
 
-    pipeline(datasets_s, False, n=n, skip=True)
-    #pipeline(datasets_c, True, n=n, skip=True)
+    pipeline(datasets_s, False, n=n, skip=False)
+    pipeline(datasets_c, True, n=n, skip=False)
         
     if combine:
         cp_main()
