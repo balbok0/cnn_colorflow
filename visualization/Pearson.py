@@ -45,6 +45,7 @@ def plot_pearson(run_dir, save_dir, name, show=False, only_true=False, show_obs=
 
   plt.savefig(save_dir + 'truths/' + name + '_pearson_truth.png')
   plt.savefig(save_dir + 'truths/' + name + '_pearson_truth.pdf')
+  np.save(save_dir + 'truths/' + name + '_pearson_truth.png', X_image)
   if show:
     plt.show()
 
@@ -71,6 +72,7 @@ def plot_pearson(run_dir, save_dir, name, show=False, only_true=False, show_obs=
   plt.colorbar()
   plt.savefig(save_dir + 'NNs/' + name + '_pearson_nn.png')
   plt.savefig(save_dir + 'NNs/' + name + '_pearson_nn.pdf')
+  np.save(save_dir + 'truths/' + name + '_pearson_net.png', X_image)
   if show:
     plt.show()
   

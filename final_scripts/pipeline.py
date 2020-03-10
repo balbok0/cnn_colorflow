@@ -175,9 +175,13 @@ def pipeline(datasets, ischarged, usePrev = True, skip = False, n = 150000):
 def main(combine = False, n = 150000):
     datasets_c = ['h_qq_rot_charged', 'h_gg_rot_charged', 'cp_qq_rot_charged', 'qx_qg_rot_charged', 's8_gg_rot_charged', 'zp_qq_rot_charged',  'six_jj_rot_charged', 'x2_jj_rot_charged']
     datasets_s = ['h_qq', 'h_gg', 'cp_qq', 'qx_qg', 's8_gg', 'zp_qq', 'six_jj', 'x2_jj']
+    datasets_untrimmed = ['cp_qq_untrim_standard', 'zp_qq_untrim_standard']
+    datasets_untrimmed_charged = ['cp_qq_untrim_charged', 'zp_qq_untrim_charged']
 
-    pipeline(datasets_s, False, n=n, skip=False)
-    pipeline(datasets_c, True, n=n, skip=False)
+    #pipeline(datasets_s, False, n=n, skip=False)
+    #pipeline(datasets_c, True, n=n, skip=False)
+    pipeline(datasets_untrimmed, False, n=n, skip=False)
+    pipeline(datasets_untrimmed_charged, True, n=n, skip=False)
         
     if combine:
         cp_main()
